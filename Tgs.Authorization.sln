@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization", "Tgs.Authorization\Tgs.Authorization.csproj", "{2F7B5994-74A8-476B-8565-F3384CE98AF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authorization.Core", "Authorization.Core\Authorization.Core.csproj", "{769F7A24-B38A-49C3-AC98-7B0F695ADBA5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "方案項目", "方案項目", "{2C575BEA-5687-413C-B9A1-F83E35D55097}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authorization.Core.UnitTests", "Authorization.Core.UnitTests\Authorization.Core.UnitTests.csproj", "{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F7B5994-74A8-476B-8565-F3384CE98AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F7B5994-74A8-476B-8565-F3384CE98AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F7B5994-74A8-476B-8565-F3384CE98AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F7B5994-74A8-476B-8565-F3384CE98AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{769F7A24-B38A-49C3-AC98-7B0F695ADBA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{769F7A24-B38A-49C3-AC98-7B0F695ADBA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{769F7A24-B38A-49C3-AC98-7B0F695ADBA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{769F7A24-B38A-49C3-AC98-7B0F695ADBA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6ADA77EF-6162-424C-ADF5-B08382BB6EF5}
+	EndGlobalSection
+EndGlobal
