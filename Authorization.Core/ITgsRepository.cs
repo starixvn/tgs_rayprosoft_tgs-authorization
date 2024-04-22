@@ -23,4 +23,10 @@ public interface ITgsRepository
 	ValueTask DeleteAccountFunctionGrantAsync(Guid functionId, Guid accountId, CancellationToken cancellationToken = default);
 
 	ValueTask DeleteRoleFunctionGrantAsync(Guid functionId, Guid roleId, CancellationToken cancellationToken = default);
+
+	ValueTask CreateFunctionAsync(SystemFunction function, CancellationToken cancellationToken = default);
+
+	ValueTask RenameFunctionAsync(Guid functionId, string newName, CancellationToken cancellationToken = default);
+
+	ValueTask DeleteFunctionAsync(Guid functionId, CancellationToken cancellationToken = default);
 }
