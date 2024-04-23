@@ -4,6 +4,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Microsoft.AspNetCore.Http.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -33,26 +34,30 @@ var builder = WebApplication.CreateBuilder(args);
 	var instrumentationExtenionFilters = new[] { "html", "ico", "png", "jpg" };
 	_ = builder.Services
 		.AddOpenTelemetry()
-		.WithTracing(
-			tracingBuilder => tracingBuilder
-				.SetResourceBuilder(ResourceBuilder.CreateDefault()
-					.AddEnvironmentVariableDetector())
-				.AddSource("Tgs.*")
-				.AddSource("TGS.*")
-				.AddSource("Valhalla.*")
-				.AddAspNetCoreInstrumentation(options => options.Filter =
-					httpContext => !httpContext.Request.Path.HasValue
-						|| !httpContext.Request.Path.StartsWithSegments("/swagger")
-						&& !httpContext.Request.Path.StartsWithSegments("/healthz")
-						&& !httpContext.Request.Path.StartsWithSegments("/metrics")
-						&& !httpContext.Request.Path.StartsWithSegments("/profiler/")
-						&& !instrumentationExtenionFilters.Any(
-							ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
-				.AddProfileViewExporter()
-				.AddOtlpExporter())
+		.ConfigureResource(resourceBuilder => resourceBuilder
+			.AddEnvironmentVariableDetector())
+		.WithTracing(tracingBuilder => tracingBuilder
+			.AddSource("Tgs.*")
+			.AddSource("TGS.*")
+			.AddSource("Valhalla.*")
+			.AddAspNetCoreInstrumentation(options =>
+			{
+				options.EnrichWithHttpRequest = (activity, httpRequest) =>
+					activity.DisplayName = httpRequest.GetEncodedPathAndQuery();
+
+				options.Filter = httpContext => !httpContext.Request.Path.HasValue
+					|| !httpContext.Request.Path.StartsWithSegments("/swagger")
+					&& !httpContext.Request.Path.StartsWithSegments("/healthz")
+					&& !httpContext.Request.Path.StartsWithSegments("/metrics")
+					&& !httpContext.Request.Path.StartsWithSegments("/profiler/")
+					&& !httpContext.Request.Path.StartsWithSegments("/_vs/")
+					&& !httpContext.Request.Path.StartsWithSegments("/_framework/")
+					&& !instrumentationExtenionFilters.Any(
+						ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
+			})
+			.AddProfileViewExporter()
+			.AddOtlpExporter())
 		.WithMetrics(meterBuilder => meterBuilder
-			.SetResourceBuilder(ResourceBuilder.CreateDefault()
-				.AddEnvironmentVariableDetector())
 			.AddAspNetCoreInstrumentation()
 			.AddRuntimeInstrumentation()
 			.AddOtlpExporter())
@@ -64,9 +69,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 {
+	app.MapControllers();
 	app.MapSwagger();
 	app.UseSwaggerUI();
-	app.MapHealthChecks("healthz");
+	app.MapHealthChecks("/healthz");
 	app.MapProfileViewer();
 }
 
