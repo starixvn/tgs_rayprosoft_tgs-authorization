@@ -12,7 +12,7 @@ public class FunctionController : ControllerBase
 	[HttpPut(Name = "CreateFunction")]
 	public ValueTask<Guid> CreateFunctionAsync(
 		[FromServices] IGetService<CreateFunctionCommand, Guid> createService,
-		CreateFunctionViewModel viewModel)
+		[FromBody] CreateFunctionViewModel viewModel)
 	{
 		var command = new CreateFunctionCommand(viewModel.Name, viewModel.System);
 
@@ -38,5 +38,30 @@ public class FunctionController : ControllerBase
 		var command = new DeleteFunctionCommand(functionId);
 
 		return deleteService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
+
+	[HttpPut("feature/{functionId:Guid}", Name = "AddFunctionFeature")]
+	public ValueTask<Guid> AddFunctionFeatureAsync(
+		[FromServices] IGetService<AddFunctionFeatureCommand, Guid> addFeaturService,
+		Guid functionId,
+		[FromBody] CreateFunctionFeatureViewModel viewModel)
+	{
+		var command = new AddFunctionFeatureCommand(
+			functionId,
+			viewModel.Name,
+			viewModel.Type,
+			viewModel.Settings);
+
+		return addFeaturService.GetAsync(command, HttpContext.RequestAborted);
+	}
+
+	[HttpDelete("feature/{featureId:Guid}", Name = "RemoveFunctionFeature")]
+	public ValueTask RemoveFunctionFeatureAsync(
+		[FromServices] ICommandService<RemoveFunctionFeatureCommand> removeService,
+		Guid featureId)
+	{
+		var command = new RemoveFunctionFeatureCommand(featureId);
+
+		return removeService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
 }

@@ -29,4 +29,8 @@ public interface ITgsRepository
 	ValueTask RenameFunctionAsync(Guid functionId, string newName, CancellationToken cancellationToken = default);
 
 	ValueTask DeleteFunctionAsync(Guid functionId, CancellationToken cancellationToken = default);
+
+	ValueTask InsertFunctionFeatureAsync(Guid functionId, SystemFunctionFeature<string> feature, CancellationToken cancellationToken = default);
+
+	ValueTask DeleteFunctionFeatureAsync(Guid featureId, CancellationToken cancellationToken = default);
 }
