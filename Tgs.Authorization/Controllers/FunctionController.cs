@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Tgs.Authorization.ApplicationServices;
 using Tgs.Authorization.ViewModels;
 using Tgs.ServiceUtility;
@@ -9,6 +10,22 @@ namespace Tgs.Authorization.Controllers;
 [ApiController]
 public class FunctionController : ControllerBase
 {
+	[HttpGet("{system}", Name = "ListSystemFunctions")]
+	public IAsyncEnumerable<SystemFunctionViewModel> ListSystemFunctionsAsync(
+		[FromServices] IQueryService<ListSystemFunctionsQuery, SystemFunction> queryService,
+		string system)
+	{
+		var query = new ListSystemFunctionsQuery(system);
+
+		return queryService.QueryAsync(query, HttpContext.RequestAborted)
+			.Select(sysFunc => new SystemFunctionViewModel
+			{
+				Id = sysFunc.Id,
+				Name = sysFunc.Name,
+				System = sysFunc.System
+			});
+	}
+
 	[HttpPut(Name = "CreateFunction")]
 	public ValueTask<Guid> CreateFunctionAsync(
 		[FromServices] IGetService<CreateFunctionCommand, Guid> createService,
@@ -38,6 +55,23 @@ public class FunctionController : ControllerBase
 		var command = new DeleteFunctionCommand(functionId);
 
 		return deleteService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
+
+	[HttpGet("feature/{functionId:guid}", Name = "GetFunctionFeatures")]
+	public IAsyncEnumerable<SystemFunctionFeatureViewModel> ListFunctionFeaturesAsync(
+		[FromServices] IQueryService<ListFunctionFeaturesQuery, SystemFunctionFeature<JsonDocument>> queryService,
+		Guid functionId)
+	{
+		var query = new ListFunctionFeaturesQuery(functionId);
+
+		return queryService.QueryAsync(query, HttpContext.RequestAborted)
+			.Select(feat => new SystemFunctionFeatureViewModel
+			{
+				Id = feat.Id,
+				Name = feat.Name,
+				Type = feat.Type,
+				Settings = feat.Settings,
+			});
 	}
 
 	[HttpPut("feature/{functionId:Guid}", Name = "AddFunctionFeature")]

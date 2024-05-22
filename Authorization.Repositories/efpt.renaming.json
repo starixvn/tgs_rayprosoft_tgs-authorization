@@ -1,0 +1,18 @@
+﻿[
+   {
+      "SchemaName": "tgs2",
+      "Tables": [
+         {
+            "Columns": [ ],
+            "Name": "features",
+            "NewName": "FeatureRow"
+         },
+         {
+            "Columns": [ ],
+            "Name": "functions",
+            "NewName": "FunctionRow"
+         }
+      ],
+      "UseSchemaName": false
+   }
+]

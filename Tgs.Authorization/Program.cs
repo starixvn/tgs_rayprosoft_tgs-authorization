@@ -1,10 +1,11 @@
-﻿using Microsoft.OpenApi.Models;
-using System.Reflection;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Microsoft.AspNetCore.Http.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -16,6 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 		});
 
 	_ = builder.Services
+		.AddTgsAuthorization()
+		.AddTgsAuthorizationRepositories(dbBuilder => dbBuilder
+			.UseNpgsql("name=Tgs"))
 		.AddProblemDetails()
 		.AddRouting(options => options.LowercaseUrls = true)
 		.AddControllers();

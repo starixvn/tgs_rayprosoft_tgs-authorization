@@ -15,7 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "方案項目", "方案項�
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authorization.Core.UnitTests", "Authorization.Core.UnitTests\Authorization.Core.UnitTests.csproj", "{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.Authorization.UnitTests", "Tgs.Authorization.UnitTests\Tgs.Authorization.UnitTests.csproj", "{0629F7F5-4FA8-4F6F-9268-34B3A8E0C449}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization.UnitTests", "Tgs.Authorization.UnitTests\Tgs.Authorization.UnitTests.csproj", "{0629F7F5-4FA8-4F6F-9268-34B3A8E0C449}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthorizationClients.IntegrationTests", "AuthorizationClients.IntegrationTests\AuthorizationClients.IntegrationTests.csproj", "{D775F3B2-C5B0-436F-8935-3B6772CCB40C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization.Client", "Tgs.Authorization.Client\Tgs.Authorization.Client.csproj", "{4DB636E7-9E35-4D55-9931-5F29FCA7C4A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authorization.Repositories", "Authorization.Repositories\Authorization.Repositories.csproj", "{BC005945-83F2-4367-8F51-F0CC99051181}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{0629F7F5-4FA8-4F6F-9268-34B3A8E0C449}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0629F7F5-4FA8-4F6F-9268-34B3A8E0C449}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0629F7F5-4FA8-4F6F-9268-34B3A8E0C449}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D775F3B2-C5B0-436F-8935-3B6772CCB40C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D775F3B2-C5B0-436F-8935-3B6772CCB40C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D775F3B2-C5B0-436F-8935-3B6772CCB40C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D775F3B2-C5B0-436F-8935-3B6772CCB40C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DB636E7-9E35-4D55-9931-5F29FCA7C4A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DB636E7-9E35-4D55-9931-5F29FCA7C4A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DB636E7-9E35-4D55-9931-5F29FCA7C4A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DB636E7-9E35-4D55-9931-5F29FCA7C4A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC005945-83F2-4367-8F51-F0CC99051181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC005945-83F2-4367-8F51-F0CC99051181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC005945-83F2-4367-8F51-F0CC99051181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC005945-83F2-4367-8F51-F0CC99051181}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
