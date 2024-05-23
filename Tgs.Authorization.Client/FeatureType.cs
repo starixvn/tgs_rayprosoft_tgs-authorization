@@ -3,4 +3,5 @@
 public enum FeatureType
 {
 	None = 0,
+	Http
 }

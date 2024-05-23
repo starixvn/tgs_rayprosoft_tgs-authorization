@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PhoenixToolkits.Authorization.Abstractions" Version="0.0.4" />
+    <PackageReference Include="AsyncMethodNameFixer" Version="2.3.0" />
     <PackageReference Include="PhoenixToolkits.CodeAnalysis.Analyzers" Version="0.0.12">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

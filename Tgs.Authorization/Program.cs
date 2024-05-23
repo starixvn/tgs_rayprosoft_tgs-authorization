@@ -27,7 +27,7 @@ var builder = WebApplication.CreateBuilder(args);
 	_ = builder.Services
 		.AddSwaggerGen(c =>
 		{
-			c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthenticationService", Version = "v1" });
+			c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthorizationService", Version = "v1" });
 
 			var xml = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 			var path = Path.Combine(AppContext.BaseDirectory, xml);
@@ -42,7 +42,6 @@ var builder = WebApplication.CreateBuilder(args);
 			.AddEnvironmentVariableDetector())
 		.WithTracing(tracingBuilder => tracingBuilder
 			.AddSource("Tgs.*")
-			.AddSource("TGS.*")
 			.AddSource("Valhalla.*")
 			.AddAspNetCoreInstrumentation(options =>
 			{
