@@ -49,7 +49,7 @@ public class GrantController : ControllerBase
 		return removeService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
 
-	[HttpDelete("role/{roleId:Guid}", Name = "RemoveRoleGrant")]
+	[HttpDelete("role/{roleId:Guid}/{functionId:Guid}", Name = "RemoveRoleGrant")]
 	public ValueTask RemoveRoleGrantAsync(
 		[FromServices] ICommandService<RemoveRoleGrantCommand> removeService,
 		Guid roleId,

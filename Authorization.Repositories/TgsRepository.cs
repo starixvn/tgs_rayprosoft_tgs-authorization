@@ -33,7 +33,19 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 	}
 
-	public ValueTask DeleteAccountFunctionGrantAsync(Guid functionId, Guid accountId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+	public async ValueTask DeleteAccountFunctionGrantAsync(Guid functionId, Guid accountId, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.GrantRows.FindAsync(
+			[accountId, functionId],
+			cancellationToken).ConfigureAwait(false);
+
+		if (row is not null)
+		{
+			dbContext.GrantRows.Remove(row);
+
+			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		}
+	}
 
 	public async ValueTask DeleteFunctionAsync(Guid functionId, CancellationToken cancellationToken = default)
 	{
@@ -77,7 +89,19 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		}
 	}
 
-	public ValueTask DeleteRoleFunctionGrantAsync(Guid functionId, Guid roleId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+	public async ValueTask DeleteRoleFunctionGrantAsync(Guid roleId, Guid functionId, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.RoleGrantRows.FindAsync(
+			[roleId, functionId],
+			cancellationToken).ConfigureAwait(false);
+
+		if (row is not null)
+		{
+			dbContext.RoleGrantRows.Remove(row);
+
+			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		}
+	}
 
 	public IAsyncEnumerable<Role> GetAccountAllRolesAsync(Guid accountId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
@@ -148,7 +172,40 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		}
 	}
 
-	public ValueTask UpsertAccountFunctionGrantAsync(AccountGrant grant, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+	public async ValueTask UpsertAccountFunctionGrantAsync(AccountGrant grant, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.GrantRows.FindAsync(
+			[grant.AccountId, grant.FunctionId],
+			cancellationToken).ConfigureAwait(false)
+			?? (await dbContext.GrantRows.AddAsync(
+				new GrantRow
+				{
+					AccountId = grant.AccountId,
+					FunctionId = grant.FunctionId
+				},
+				cancellationToken).ConfigureAwait(false)).Entity;
 
-	public ValueTask UpsertRoleFunctionGrantAsync(RoleGrant grant, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+		row.Type = grant.Type.ToString();
+
+		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+	}
+
+	public async ValueTask UpsertRoleFunctionGrantAsync(RoleGrant grant, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.RoleGrantRows.FindAsync(
+			[grant.RoleId, grant.FunctionId],
+			cancellationToken).ConfigureAwait(false)
+			?? (await dbContext.RoleGrantRows.AddAsync(
+				new RoleGrantRow
+				{
+					RoleId = grant.RoleId,
+					FunctionId = grant.FunctionId,
+				},
+				cancellationToken).ConfigureAwait(false)).Entity;
+
+		row.Type = grant.Type.ToString();
+		row.Priority = grant.Priority;
+
+		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+	}
 }

@@ -16,7 +16,7 @@ public interface ITgsRepository
 
 	ValueTask DeleteRoleAsync(Guid roleId, CancellationToken cancellationToken = default);
 
-	ValueTask DeleteRoleFunctionGrantAsync(Guid functionId, Guid roleId, CancellationToken cancellationToken = default);
+	ValueTask DeleteRoleFunctionGrantAsync(Guid roleId, Guid functionId, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<Role> GetAccountAllRolesAsync(Guid accountId, CancellationToken cancellationToken = default);
 

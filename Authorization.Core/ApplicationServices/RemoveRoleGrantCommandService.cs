@@ -7,7 +7,7 @@ internal class RemoveRoleGrantCommandService(ITgsRepository tgsRepository)
 {
 	public ValueTask ExecuteAsync(RemoveRoleGrantCommand command, CancellationToken cancellationToken = default)
 		=> tgsRepository.DeleteRoleFunctionGrantAsync(
-			command.FunctionId,
 			command.RoleId,
+			command.FunctionId,
 			cancellationToken);
 }

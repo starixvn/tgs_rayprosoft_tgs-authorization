@@ -27,6 +27,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "tgs2.grants",
+         "ObjectType": 0
+      },
+      {
+         "Name": "tgs2.role_grants",
+         "ObjectType": 0
+      },
+      {
          "Name": "tgs2.roles",
          "ObjectType": 0
       }

@@ -118,4 +118,44 @@ internal class AuthorizationClient(HttpClient httpClient) : IAuthorizationClient
 				.ReadFromJsonAsAsyncEnumerable<Role>(ClientUtility.SerializerOptions, cancellationToken))
 			.Where(role => role is not null)
 			.Select(role => role!);
+
+	public async ValueTask AssignAccountGrantAsync(Guid accountId, GrantRequest request, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.PutAsJsonAsync(
+			$"/grant/account/{accountId}",
+			request,
+			ClientUtility.SerializerOptions,
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
+	public async ValueTask RemoveAccountGrantAsync(Guid accountId, Guid functionId, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.DeleteAsync(
+			$"/grant/account/{accountId}/{functionId}",
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
+	public async ValueTask AssignRoleGrantAsync(Guid roleId, RoleGrantRequest request, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.PutAsJsonAsync(
+			$"/grant/role/{roleId}",
+			request,
+			ClientUtility.SerializerOptions,
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
+	public async ValueTask RemoveRoleGrantAsync(Guid roleId, Guid functionId, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.DeleteAsync(
+			$"/grant/role/{roleId}/{functionId}",
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
 }

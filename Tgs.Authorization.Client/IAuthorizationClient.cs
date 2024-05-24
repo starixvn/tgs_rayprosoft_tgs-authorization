@@ -21,4 +21,12 @@ public interface IAuthorizationClient
 	ValueTask DeleteRoleAsync(Guid roleId, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<Role> GetRolesBySystemAsync(string system, CancellationToken cancellationToken = default);
+
+	ValueTask AssignAccountGrantAsync(Guid accountId, GrantRequest request, CancellationToken cancellationToken = default);
+
+	ValueTask RemoveAccountGrantAsync(Guid accountId, Guid functionId, CancellationToken cancellationToken = default);
+
+	ValueTask AssignRoleGrantAsync(Guid roleId, RoleGrantRequest request, CancellationToken cancellationToken = default);
+
+	ValueTask RemoveRoleGrantAsync(Guid roleId, Guid functionId, CancellationToken cancellationToken = default);
 }

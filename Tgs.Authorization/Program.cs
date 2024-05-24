@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -22,7 +23,8 @@ var builder = WebApplication.CreateBuilder(args);
 			.UseNpgsql("name=Tgs"))
 		.AddProblemDetails()
 		.AddRouting(options => options.LowercaseUrls = true)
-		.AddControllers();
+		.AddControllers()
+		.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 	_ = builder.Services
 		.AddSwaggerGen(c =>

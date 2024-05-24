@@ -21,7 +21,7 @@ public class RemoveRoleGrantCommandServiceTests
         // Assert
         _ = fakeTgsRepository.Received(1)
             .DeleteRoleFunctionGrantAsync(
-                Arg.Is(command.FunctionId),
-                Arg.Is(command.RoleId));
+                Arg.Is(command.RoleId),
+                Arg.Is(command.FunctionId));
     }
 }

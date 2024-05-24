@@ -18,12 +18,18 @@ public partial class TgsContext : DbContext
 
     public virtual DbSet<FunctionRow> FunctionRows { get; set; }
 
+    public virtual DbSet<GrantRow> GrantRows { get; set; }
+
+    public virtual DbSet<RoleGrantRow> RoleGrantRows { get; set; }
+
     public virtual DbSet<RoleRow> RoleRows { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new Configurations.FeatureRowConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.FunctionRowConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.GrantRowConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.RoleGrantRowConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.RoleRowConfiguration());
 
         OnModelCreatingPartial(modelBuilder);
