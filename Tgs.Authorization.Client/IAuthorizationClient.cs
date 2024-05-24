@@ -15,4 +15,10 @@ public interface IAuthorizationClient
 	ValueTask RemoveFunctionFeatureAsync(Guid featureId, CancellationToken cancellationToken = default);
 
 	ValueTask RenameFunctionAsync(Guid functionId, string newName, CancellationToken cancellationToken = default);
+
+	ValueTask<Guid> CreateRoleAsync(string system, string roleName, CancellationToken cancellationToken = default);
+
+	ValueTask DeleteRoleAsync(Guid roleId, CancellationToken cancellationToken = default);
+
+	IAsyncEnumerable<Role> GetRolesBySystemAsync(string system, CancellationToken cancellationToken = default);
 }

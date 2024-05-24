@@ -25,6 +25,10 @@
       {
          "Name": "tgs2.functions",
          "ObjectType": 0
+      },
+      {
+         "Name": "tgs2.roles",
+         "ObjectType": 0
       }
    ],
    "UiHint": null,

@@ -83,4 +83,39 @@ internal class AuthorizationClient(HttpClient httpClient) : IAuthorizationClient
 
 		_ = response.EnsureSuccessStatusCode();
 	}
+
+	public ValueTask<Guid> CreateRoleAsync(string system, string roleName, CancellationToken cancellationToken = default)
+		=> httpClient.PutAsJsonAsync(
+			$"/role/{system}",
+			new
+			{
+				Name = roleName
+			},
+			ClientUtility.SerializerOptions,
+			cancellationToken)
+			.ToAsyncEnumerable()
+			.Do(response => response.EnsureSuccessStatusCode())
+			.SelectMany(response => response.Content
+				.ReadFromJsonAsync<Guid>(ClientUtility.SerializerOptions, cancellationToken)
+				.ToAsyncEnumerable())
+			.Take(1)
+			.SingleAsync(cancellationToken);
+
+	public async ValueTask DeleteRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.DeleteAsync(
+			$"/role/{roleId}",
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
+	public IAsyncEnumerable<Role> GetRolesBySystemAsync(string system, CancellationToken cancellationToken = default)
+		=> httpClient.GetAsync($"/role/{system}", cancellationToken)
+			.ToAsyncEnumerable()
+			.Do(response => response.EnsureSuccessStatusCode())
+			.SelectMany(response => response.Content
+				.ReadFromJsonAsAsyncEnumerable<Role>(ClientUtility.SerializerOptions, cancellationToken))
+			.Where(role => role is not null)
+			.Select(role => role!);
 }

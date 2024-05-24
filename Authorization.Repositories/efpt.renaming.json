@@ -11,6 +11,11 @@
             "Columns": [ ],
             "Name": "functions",
             "NewName": "FunctionRow"
+         },
+         {
+            "Columns": [ ],
+            "Name": "roles",
+            "NewName": "RoleRow"
          }
       ],
       "UseSchemaName": false

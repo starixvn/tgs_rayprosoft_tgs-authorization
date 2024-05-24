@@ -19,7 +19,19 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 	}
 
-	public ValueTask CreateRoleAsync(Role newRole, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+	public async ValueTask CreateRoleAsync(Role newRole, CancellationToken cancellationToken = default)
+	{
+		_ = await dbContext.RoleRows.AddAsync(
+			new RoleRow
+			{
+				Id = newRole.Id,
+				Name = newRole.Name,
+				System = newRole.System
+			},
+			cancellationToken).ConfigureAwait(false);
+
+		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+	}
 
 	public ValueTask DeleteAccountFunctionGrantAsync(Guid functionId, Guid accountId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
@@ -51,7 +63,19 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		}
 	}
 
-	public ValueTask DeleteRoleAsync(Guid roleId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+	public async ValueTask DeleteRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.RoleRows.FindAsync(
+			[roleId],
+			cancellationToken).ConfigureAwait(false);
+
+		if (row is not null)
+		{
+			dbContext.RoleRows.Remove(row);
+
+			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		}
+	}
 
 	public ValueTask DeleteRoleFunctionGrantAsync(Guid functionId, Guid roleId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
@@ -61,7 +85,12 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 
 	public IAsyncEnumerable<RoleGrant> GetFunctionGrantRolesAsync(Guid functionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-	public IAsyncEnumerable<Role> GetSystemAllRolesAsync(string system, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+	public IAsyncEnumerable<Role> GetSystemAllRolesAsync(string system, CancellationToken cancellationToken = default)
+		=> dbContext.RoleRows
+			.Where(row => row.System == system)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new Role(row.Id, row.Name, row.System));
 
 	public IAsyncEnumerable<SystemFunctionFeature<JsonDocument>> GetSystemFunctionFeaturesAsync(
 		Guid functionId,
@@ -69,6 +98,7 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		=> dbContext.FeatureRows
 			.Where(row => row.FunctionId == functionId)
 			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
 			.Select(row => new SystemFunctionFeature<JsonDocument>(
 				row.Id,
 				row.Name,
@@ -79,6 +109,7 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		=> dbContext.FunctionRows
 			.Where(row => row.System == system)
 			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
 			.Select(row => new SystemFunction(
 				row.Id,
 				row.Name,

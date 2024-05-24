@@ -35,7 +35,7 @@ public class RoleController : ControllerBase
 		return createRoleService.GetAsync(command, HttpContext.RequestAborted);
 	}
 
-	[HttpPut("{roleId:Guid}", Name = "DeleteRole")]
+	[HttpDelete("{roleId:Guid}", Name = "DeleteRole")]
 	public ValueTask DeleteRoleAsync(
 		[FromServices] ICommandService<DeleteRoleCommand> deleteService,
 		Guid roleId)
