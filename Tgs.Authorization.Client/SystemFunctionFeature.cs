@@ -10,10 +10,7 @@ public record SystemFunctionFeature(
 {
 	public TSettings? GetSettings<TSettings>()
 		where TSettings : class
-	{
-		if (Type == FeatureType.Http && typeof(TSettings) == typeof(HttpFeatureSettings))
-			return Settings.Deserialize<TSettings>(ClientUtility.SerializerOptions);
-
-		return null;
-	}
+		=> Type == FeatureType.Http && typeof(TSettings) == typeof(HttpFeatureSettings)
+			? Settings.Deserialize<TSettings>(ClientUtility.SerializerOptions)
+			: null;
 }

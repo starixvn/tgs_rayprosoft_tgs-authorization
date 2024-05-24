@@ -1,17 +1,84 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using Microsoft.Extensions.Logging;
+using Tgs.Authorization.Clients;
+using Tgs.Authorization.Clients.DependencyInjection;
+using Valhalla.Authorization;
+using Xunit.Abstractions;
 
 namespace AuthorizationClients.IntegrationTests;
-public class ClientTests
+
+public class ClientTests(ITestOutputHelper testOutputHelper)
 {
+    [Fact]
+    public async Task 整合測試_可以正確識別HttpFunction()
+    {
+        // Arrange
+        var system = "Test";
+
+        var webBuilder = WebApplication.CreateBuilder();
+
+        _ = webBuilder.Logging.AddXUnit(testOutputHelper);
+
+        var fakeAuthorizationClient = Substitute.For<IAuthorizationClient>();
+
+        _ = webBuilder.Services
+            .AddAuthentication()
+            .AddBearerToken()
+            .Services
+            .AddSingleton(Substitute.For<IAuthorizationIdentityResolveProvider>())
+            .AddSingleton(fakeAuthorizationClient)
+            .AddPhoenixAuthorizationKits(system)
+            .RegisterTgsAuthorizationDataStore()
+            .Services
+            .AddWebApiAuthorizationMiddlewareResultHandler()
+            .AddAuthorizationBuilder()
+            .AddHttpFallbackPolicy();
+
+        _ = webBuilder.WebHost.UseTestServer();
+
+        await using var web = webBuilder.Build();
+
+        web.UseCaptureFunction();
+        _ = web.MapGet("/info", (HttpContext context) => context.Features.Get<IAuthorizationFunction>()?.Id)
+            .AllowAnonymous();
+
+        var functionId = Guid.NewGuid();
+
+        await web.StartAsync();
+
+        var http = web.GetTestClient();
+
+        _ = fakeAuthorizationClient.ListSystemFunctionsAsync(Arg.Is(system), Arg.Any<CancellationToken>())
+            .Returns(new[]
+            {
+                new SystemFunction(functionId, "func1", system)
+            }.ToAsyncEnumerable());
+
+        _ = fakeAuthorizationClient.ListSystemFunctionFeaturesAsync(Arg.Is(functionId), Arg.Any<CancellationToken>())
+            .Returns(new[]
+            {
+                new SystemFunctionFeature(
+                    Guid.NewGuid(),
+                    "feat1",
+                    FeatureType.Http,
+                    JsonSerializer.SerializeToDocument(
+                        new HttpFeatureSettings(["GET"], "/info"),
+                        ClientUtility.SerializerOptions))
+            }.ToAsyncEnumerable());
+
+        // Act
+        var actual = await http.GetFromJsonAsync<Guid?>("/info");
+
+        // Assert
+        Assert.Equal(functionId, actual);
+    }
+
     [Fact]
     public async Task 整合測試_授權Api呼叫_沒有權限會得到403回應()
     {

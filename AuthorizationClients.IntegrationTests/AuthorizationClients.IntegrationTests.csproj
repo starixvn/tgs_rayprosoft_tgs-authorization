@@ -14,8 +14,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageReference Include="NSubstitute" Version="5.1.0" />
     <PackageReference Include="PhoenixToolkits.Authorization.AspNetCore" Version="0.0.5" />
     <PackageReference Include="PhoenixToolkits.CodeAnalysis.Analyzers" Version="0.0.12">
       <PrivateAssets>all</PrivateAssets>
@@ -29,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="NSubstitute" />
     <Using Include="Xunit" />
   </ItemGroup>
 
@@ -38,6 +41,10 @@
 
   <ItemGroup>
     <None Include="D:\Users\Phoenix\Develop\source\repos\Tgs.Authorization\AuthorizationClients.IntegrationTests\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tgs.Authorization.Client.AspNetCore\Tgs.Authorization.Client.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>
