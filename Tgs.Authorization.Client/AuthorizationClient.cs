@@ -158,4 +158,14 @@ internal class AuthorizationClient(HttpClient httpClient) : IAuthorizationClient
 
 		_ = response.EnsureSuccessStatusCode();
 	}
+
+	public ValueTask<bool> AuthorizeAsync(Guid accountId, Guid functionId, CancellationToken cancellationToken = default)
+		=> httpClient.GetAsync($"/authorize/{accountId}/{functionId}", cancellationToken)
+			.ToAsyncEnumerable()
+			.Do(response => response.EnsureSuccessStatusCode())
+			.SelectMany(response => response.Content
+				.ReadFromJsonAsync<bool>(ClientUtility.SerializerOptions, cancellationToken)
+				.ToAsyncEnumerable())
+			.Take(1)
+			.SingleAsync(cancellationToken);
 }

@@ -10,7 +10,6 @@ internal class AssignRoleGrantCommandService(ITgsRepository tgsRepository)
 			new RoleGrant(
 				command.FunctionId,
 				command.RoleId,
-				command.Type,
-				command.Priority),
+				command.Type),
 			cancellationToken);
 }

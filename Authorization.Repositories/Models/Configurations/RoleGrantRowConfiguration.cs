@@ -19,7 +19,6 @@ namespace Tgs.Authorization.Repositories.Entities.Configurations
 
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.FunctionId).HasColumnName("function_id");
-            entity.Property(e => e.Priority).HasColumnName("priority");
             entity.Property(e => e.Type)
                 .HasMaxLength(128)
                 .HasColumnName("type");

@@ -19,6 +19,10 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "tgs2.account_roles",
+         "ObjectType": 0
+      },
+      {
          "Name": "tgs2.features",
          "ObjectType": 0
       },

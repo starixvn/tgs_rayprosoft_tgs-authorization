@@ -16,8 +16,7 @@ public class AssignRoleGrantCommandServiceTests
         var command = new AssignRoleGrantCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            PermissionType.Allow,
-            100);
+            PermissionType.Allow);
 
         // Act
         await sut.ExecuteAsync(command);
@@ -28,7 +27,6 @@ public class AssignRoleGrantCommandServiceTests
                 Arg.Is(new RoleGrant(
                     command.FunctionId,
                     command.RoleId,
-                    command.Type,
-                    command.Priority)));
+                    command.Type)));
     }
 }

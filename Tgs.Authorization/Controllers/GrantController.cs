@@ -27,13 +27,12 @@ public class GrantController : ControllerBase
 	public ValueTask AssignRoleGrantAsync(
 		[FromServices] ICommandService<AssignRoleGrantCommand> assignService,
 		Guid roleId,
-		RoleGrantRequestViewModel viewModel)
+		GrantRequestViewModel viewModel)
 	{
 		var command = new AssignRoleGrantCommand(
 			roleId,
 			viewModel.FunctionId,
-			viewModel.Type,
-			viewModel.Priority);
+			viewModel.Type);
 
 		return assignService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}

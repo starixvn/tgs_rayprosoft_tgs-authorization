@@ -2,5 +2,4 @@
 public record AssignRoleGrantCommand(
 	Guid RoleId,
 	Guid FunctionId,
-	PermissionType Type,
-	int Priority);
+	PermissionType Type);

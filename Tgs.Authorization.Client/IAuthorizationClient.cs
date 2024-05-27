@@ -29,4 +29,6 @@ public interface IAuthorizationClient
 	ValueTask AssignRoleGrantAsync(Guid roleId, RoleGrantRequest request, CancellationToken cancellationToken = default);
 
 	ValueTask RemoveRoleGrantAsync(Guid roleId, Guid functionId, CancellationToken cancellationToken = default);
+
+	ValueTask<bool> AuthorizeAsync(Guid accountId, Guid functionId, CancellationToken cancellationToken = default);
 }

@@ -14,6 +14,8 @@ public partial class TgsContext : DbContext
     {
     }
 
+    public virtual DbSet<AccountRole> AccountRoles { get; set; }
+
     public virtual DbSet<FeatureRow> FeatureRows { get; set; }
 
     public virtual DbSet<FunctionRow> FunctionRows { get; set; }
@@ -26,6 +28,7 @@ public partial class TgsContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfiguration(new Configurations.AccountRoleConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.FeatureRowConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.FunctionRowConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.GrantRowConfiguration());

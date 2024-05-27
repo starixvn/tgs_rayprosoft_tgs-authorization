@@ -12,6 +12,4 @@ public partial class RoleGrantRow
     public Guid FunctionId { get; set; }
 
     public string Type { get; set; } = null!;
-
-    public int Priority { get; set; }
 }

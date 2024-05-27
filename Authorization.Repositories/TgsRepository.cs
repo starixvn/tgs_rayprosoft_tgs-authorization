@@ -103,11 +103,39 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		}
 	}
 
-	public IAsyncEnumerable<Role> GetAccountAllRolesAsync(Guid accountId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+	public IAsyncEnumerable<Role> GetAccountAllRolesAsync(Guid accountId, CancellationToken cancellationToken = default)
+	{
+		var query = from p in dbContext.AccountRoles
+					from role in dbContext.RoleRows
+					where p.AccountId == accountId
+						&& role.Id == p.RoleId
+					select role;
 
-	public IAsyncEnumerable<AccountGrant> GetFunctionGrantAccountsAsync(Guid functionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+		return query.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new Role(row.Id, row.Name, row.System));
+	}
 
-	public IAsyncEnumerable<RoleGrant> GetFunctionGrantRolesAsync(Guid functionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+	public IAsyncEnumerable<AccountGrant> GetFunctionGrantAccountsAsync(Guid functionId, CancellationToken cancellationToken = default)
+		=> dbContext.GrantRows
+			.Where(row => row.FunctionId == functionId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new AccountGrant(
+				row.FunctionId,
+				row.AccountId,
+				Enum.Parse<PermissionType>(row.Type)));
+
+	public IAsyncEnumerable<RoleGrant> GetFunctionGrantRolesAsync(Guid functionId, CancellationToken cancellationToken = default)
+		=> dbContext.RoleGrantRows
+			.Where(row => row.FunctionId == functionId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new RoleGrant(
+				row.FunctionId,
+				row.RoleId,
+				Enum.Parse<PermissionType>(row.Type),
+				100));
 
 	public IAsyncEnumerable<Role> GetSystemAllRolesAsync(string system, CancellationToken cancellationToken = default)
 		=> dbContext.RoleRows
@@ -204,7 +232,6 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 				cancellationToken).ConfigureAwait(false)).Entity;
 
 		row.Type = grant.Type.ToString();
-		row.Priority = grant.Priority;
 
 		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 	}

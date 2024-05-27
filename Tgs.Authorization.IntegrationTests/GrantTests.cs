@@ -103,7 +103,7 @@ public class GrantTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         Assert.NotNull(actual);
-        Assert.Equal((request.Type.ToString(), request.Priority), (actual.Type, actual.Priority));
+        Assert.Equal(request.Type.ToString(), actual.Type);
     }
 
     [Fact]
@@ -131,8 +131,7 @@ public class GrantTests(ITestOutputHelper testOutputHelper)
             {
                 RoleId = roleId,
                 FunctionId = functionId,
-                Type = nameof(PermissionType.Allow),
-                Priority = 100
+                Type = nameof(PermissionType.Allow)
             });
 
         _ = await dbContext.SaveChangesAsync();
