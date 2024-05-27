@@ -44,4 +44,29 @@ public class RoleController : ControllerBase
 
 		return deleteService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
+
+	[HttpPut("account/{accountId:Guid}", Name = "AddAcountInRole")]
+	public ValueTask AddAccountInRoleAsync(
+		[FromServices] ICommandService<AddAccountInRoleCommand> commandService,
+		Guid accountId,
+		[FromBody] AddAccountInRoleViewModel viewModel)
+	{
+		var command = new AddAccountInRoleCommand(
+			accountId,
+			viewModel.RoleId,
+			viewModel.Priority);
+
+		return commandService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
+
+	[HttpDelete("account/{accountId:Guid}/{roleId:Guid}", Name = "RemoveAccountInRole")]
+	public ValueTask RemoveAccountInRoleAsync(
+		[FromServices] ICommandService<RemoveAccountInRoleCommand> removeService,
+		Guid accountId,
+		Guid roleId)
+	{
+		var command = new RemoveAccountInRoleCommand(accountId, roleId);
+
+		return removeService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
 }

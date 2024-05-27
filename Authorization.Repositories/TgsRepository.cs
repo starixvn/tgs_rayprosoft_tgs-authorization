@@ -235,4 +235,36 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 
 		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 	}
+
+	public async ValueTask UpsertAccountInRoleAsync(Guid accountId, Guid roleId, int priority, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.AccountRoles.FindAsync(
+			[accountId, roleId],
+			cancellationToken).ConfigureAwait(false)
+			?? (await dbContext.AccountRoles.AddAsync(
+				new AccountRole
+				{
+					AccountId = accountId,
+					RoleId = roleId,
+				},
+				cancellationToken).ConfigureAwait(false)).Entity;
+
+		row.Priority = priority;
+
+		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+	}
+
+	public async ValueTask RemoveAccountInRoleAsync(Guid accountId, Guid roleId, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.AccountRoles.FindAsync(
+			[accountId, roleId],
+			cancellationToken).ConfigureAwait(false);
+
+		if (row is not null)
+		{
+			dbContext.AccountRoles.Remove(row);
+
+			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		}
+	}
 }

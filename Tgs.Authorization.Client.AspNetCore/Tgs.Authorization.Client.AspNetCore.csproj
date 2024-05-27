@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncMethodNameFixer" Version="2.3.0" />
-    <PackageReference Include="PhoenixToolkits.Authorization.AspNetCore" Version="0.0.5" />
-    <PackageReference Include="PhoenixToolkits.CodeAnalysis.Analyzers" Version="0.0.12">
+    <PackageReference Include="PhoenixToolkits.Authorization.AspNetCore" Version="0.0.6" />
+    <PackageReference Include="PhoenixToolkits.CodeAnalysis.Analyzers" Version="0.0.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

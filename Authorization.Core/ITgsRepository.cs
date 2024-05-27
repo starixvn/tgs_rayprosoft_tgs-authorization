@@ -37,4 +37,8 @@ public interface ITgsRepository
 	ValueTask UpsertAccountFunctionGrantAsync(AccountGrant grant, CancellationToken cancellationToken = default);
 
 	ValueTask UpsertRoleFunctionGrantAsync(RoleGrant grant, CancellationToken cancellationToken = default);
+
+	ValueTask UpsertAccountInRoleAsync(Guid accountId, Guid roleId, int priority, CancellationToken cancellationToken = default);
+
+	ValueTask RemoveAccountInRoleAsync(Guid accountId, Guid roleId, CancellationToken cancellationToken = default);
 }
