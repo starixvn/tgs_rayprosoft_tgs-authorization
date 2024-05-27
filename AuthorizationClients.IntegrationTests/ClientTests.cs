@@ -1,6 +1,9 @@
-﻿using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -84,11 +87,31 @@ public class ClientTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var system = "Test";
+        var accountId = Guid.NewGuid();
 
         var webBuilder = WebApplication.CreateBuilder();
 
+        var fakeAuthorizationClient = Substitute.For<IAuthorizationClient>();
+
         _ = webBuilder.Services
+            .AddAuthentication()
+            .AddScheme<StubAuthenticationOptions, StubAuthenticationHandler>(
+                StubAuthenticationDefaults.AuthenticationScheme,
+                options => options.LoginTicket = new AuthenticationTicket(
+                    new ClaimsPrincipal(
+                        new ClaimsIdentity([
+                            new Claim(ClaimTypes.NameIdentifier, "test:test1"),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                            new Claim("account_id", accountId.ToString()),
+                            new Claim("session_id", Guid.NewGuid().ToString()),
+                            new Claim("system", system)
+                        ])),
+                    StubAuthenticationDefaults.AuthenticationScheme))
+            .Services
+            .AddSingleton(Substitute.For<IAuthorizationIdentityResolveProvider>())
+            .AddSingleton(fakeAuthorizationClient)
             .AddPhoenixAuthorizationKits(system)
+            .RegisterTgsAuthorizationDataStore()
             .Services
             .AddWebApiAuthorizationMiddlewareResultHandler()
             .AddAuthorizationBuilder()
@@ -101,9 +124,93 @@ public class ClientTests(ITestOutputHelper testOutputHelper)
         web.UseCaptureFunction();
         _ = web.MapGet("/info", () => "test");
 
+        var functionId = Guid.NewGuid();
+
         await web.StartAsync();
 
         var http = web.GetTestClient();
+
+        _ = fakeAuthorizationClient.ListSystemFunctionsAsync(Arg.Is(system), Arg.Any<CancellationToken>())
+            .Returns(new[]
+            {
+                    new SystemFunction(functionId, "func1", system)
+            }.ToAsyncEnumerable());
+
+        _ = fakeAuthorizationClient.ListSystemFunctionFeaturesAsync(Arg.Is(functionId), Arg.Any<CancellationToken>())
+            .Returns(new[]
+            {
+                new SystemFunctionFeature(
+                    Guid.NewGuid(),
+                    "feat1",
+                    FeatureType.Http,
+                    JsonSerializer.SerializeToDocument(
+                        new HttpFeatureSettings(["GET"], "/info"),
+                        ClientUtility.SerializerOptions))
+            }.ToAsyncEnumerable());
+
+        // Act
+        var response = await http.GetAsync("/info");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task 整合測試_授權Api呼叫_沒有登入也應該得到403回應()
+    {
+        // Arrange
+        var system = "Test";
+        var accountId = Guid.NewGuid();
+
+        var webBuilder = WebApplication.CreateBuilder();
+
+        var fakeAuthorizationClient = Substitute.For<IAuthorizationClient>();
+
+        _ = webBuilder.Services
+            .AddAuthentication()
+            .AddScheme<StubAuthenticationOptions, StubAuthenticationHandler>(
+                StubAuthenticationDefaults.AuthenticationScheme,
+                options => options.LoginTicket = null)
+            .Services
+            .AddSingleton(Substitute.For<IAuthorizationIdentityResolveProvider>())
+            .AddSingleton(fakeAuthorizationClient)
+            .AddPhoenixAuthorizationKits(system)
+            .RegisterTgsAuthorizationDataStore()
+            .Services
+            .AddWebApiAuthorizationMiddlewareResultHandler()
+            .AddAuthorizationBuilder()
+            .AddHttpFallbackPolicy();
+
+        _ = webBuilder.WebHost.UseTestServer();
+
+        await using var web = webBuilder.Build();
+
+        web.UseCaptureFunction();
+        _ = web.MapGet("/info", () => "test");
+
+        var functionId = Guid.NewGuid();
+
+        await web.StartAsync();
+
+        var http = web.GetTestClient();
+
+        _ = fakeAuthorizationClient.ListSystemFunctionsAsync(Arg.Is(system), Arg.Any<CancellationToken>())
+            .Returns(new[]
+            {
+                new SystemFunction(functionId, "func1", system)
+            }.ToAsyncEnumerable());
+
+        _ = fakeAuthorizationClient.ListSystemFunctionFeaturesAsync(Arg.Is(functionId), Arg.Any<CancellationToken>())
+            .Returns(new[]
+            {
+                new SystemFunctionFeature(
+                    Guid.NewGuid(),
+                    "feat1",
+                    FeatureType.Http,
+                    JsonSerializer.SerializeToDocument(
+                        new HttpFeatureSettings(["GET"], "/info"),
+                        ClientUtility.SerializerOptions))
+            }.ToAsyncEnumerable());
 
         // Act
         var response = await http.GetAsync("/info");
