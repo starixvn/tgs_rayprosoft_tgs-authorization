@@ -47,16 +47,16 @@ public class RoleController : ControllerBase
 
 	[HttpPut("account/{accountId:Guid}", Name = "AddAcountInRole")]
 	public ValueTask AddAccountInRoleAsync(
-		[FromServices] ICommandService<AddAccountInRoleCommand> commandService,
+		[FromServices] ICommandService<AddAccountInRoleCommand> addService,
 		Guid accountId,
-		[FromBody] AddAccountInRoleViewModel viewModel)
+		[FromBody] AddInRoleViewModel viewModel)
 	{
 		var command = new AddAccountInRoleCommand(
 			accountId,
 			viewModel.RoleId,
 			viewModel.Priority);
 
-		return commandService.ExecuteAsync(command, HttpContext.RequestAborted);
+		return addService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
 
 	[HttpDelete("account/{accountId:Guid}/{roleId:Guid}", Name = "RemoveAccountInRole")]
@@ -66,6 +66,28 @@ public class RoleController : ControllerBase
 		Guid roleId)
 	{
 		var command = new RemoveAccountInRoleCommand(accountId, roleId);
+
+		return removeService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
+
+	[HttpPut("in-role/{roleId:Guid}", Name = "AddRoleInRole")]
+	public ValueTask AddRoleInRoleAsync(
+		[FromServices] ICommandService<AddRoleInRoleCommand> addService,
+		Guid roleId,
+		[FromBody] AddInRoleViewModel viewModel)
+	{
+		var command = new AddRoleInRoleCommand(roleId, viewModel.RoleId, viewModel.Priority);
+
+		return addService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
+
+	[HttpDelete("in-role/{roleId:Guid}", Name = "RemoveRoleInRole")]
+	public ValueTask RemoveRoleInRoleAsync(
+		[FromServices] ICommandService<RemoveRoleInRoleCommand> removeService,
+		Guid roleId,
+		Guid parentRoleId)
+	{
+		var command = new RemoveRoleInRoleCommand(roleId, parentRoleId);
 
 		return removeService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}

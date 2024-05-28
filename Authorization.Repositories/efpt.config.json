@@ -39,6 +39,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "tgs2.role_in_roles",
+         "ObjectType": 0
+      },
+      {
          "Name": "tgs2.roles",
          "ObjectType": 0
       }

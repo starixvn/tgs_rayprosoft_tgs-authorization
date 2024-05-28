@@ -24,17 +24,21 @@ public partial class TgsContext : DbContext
 
     public virtual DbSet<RoleGrantRow> RoleGrantRows { get; set; }
 
+    public virtual DbSet<RoleInRole> RoleInRoles { get; set; }
+
     public virtual DbSet<RoleRow> RoleRows { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresExtension("ltree");
+
         modelBuilder.ApplyConfiguration(new Configurations.AccountRoleConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.FeatureRowConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.FunctionRowConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.GrantRowConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.RoleGrantRowConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.RoleInRoleConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.RoleRowConfiguration());
-
         OnModelCreatingPartial(modelBuilder);
     }
 

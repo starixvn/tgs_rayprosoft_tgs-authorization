@@ -267,4 +267,36 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 		}
 	}
+
+	public async ValueTask UpsertRoleInRoleAsync(Guid roleId, Guid parentRoleId, int priority, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.RoleInRoles.FindAsync(
+			[roleId, parentRoleId],
+			cancellationToken).ConfigureAwait(false)
+			?? (await dbContext.RoleInRoles.AddAsync(
+				new RoleInRole
+				{
+					RoleId = roleId,
+					ParentRoleId = parentRoleId
+				},
+				cancellationToken).ConfigureAwait(false)).Entity;
+
+		row.Priority = priority;
+
+		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+	}
+
+	public async ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.RoleInRoles.FindAsync(
+			[roleId, parentRoleId],
+			cancellationToken).ConfigureAwait(false);
+
+		if (row is not null)
+		{
+			dbContext.RoleInRoles.Remove(row);
+
+			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		}
+	}
 }
