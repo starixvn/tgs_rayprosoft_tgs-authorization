@@ -23,11 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization.Client", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authorization.Repositories", "Authorization.Repositories\Authorization.Repositories.csproj", "{BC005945-83F2-4367-8F51-F0CC99051181}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.Authorization.Client.AspNetCore", "Tgs.Authorization.Client.AspNetCore\Tgs.Authorization.Client.AspNetCore.csproj", "{B93146D5-2914-4F83-B036-15EF6DE0BB74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization.Client.AspNetCore", "Tgs.Authorization.Client.AspNetCore\Tgs.Authorization.Client.AspNetCore.csproj", "{B93146D5-2914-4F83-B036-15EF6DE0BB74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.Authorization.Client.AspNetCore.UnitTests", "Tgs.Authorization.Client.AspNetCore.UnitTests\Tgs.Authorization.Client.AspNetCore.UnitTests.csproj", "{8BB84F3C-C206-40A7-98BD-4808E39A9319}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization.Client.AspNetCore.UnitTests", "Tgs.Authorization.Client.AspNetCore.UnitTests\Tgs.Authorization.Client.AspNetCore.UnitTests.csproj", "{8BB84F3C-C206-40A7-98BD-4808E39A9319}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.Authorization.IntegrationTests", "Tgs.Authorization.IntegrationTests\Tgs.Authorization.IntegrationTests.csproj", "{E2884991-68BC-4DDE-A7BA-735BAFCCE4A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization.IntegrationTests", "Tgs.Authorization.IntegrationTests\Tgs.Authorization.IntegrationTests.csproj", "{E2884991-68BC-4DDE-A7BA-735BAFCCE4A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

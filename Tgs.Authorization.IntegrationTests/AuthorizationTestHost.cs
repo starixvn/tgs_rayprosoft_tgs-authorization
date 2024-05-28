@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry.Exporter;
 using Tgs.Authorization.Repositories.Entities;
 
 namespace Tgs.Authorization.IntegrationTests;
@@ -18,9 +21,11 @@ internal class AuthorizationTestHost
                     ["ENVIRONMENT"] = "Development",
                 });
             })
+            .ConfigureLogging(logging => logging.ClearProviders())
             .ConfigureServices(services => services
                 .AddSingleton(sp => new TgsContext(
                     new DbContextOptionsBuilder<TgsContext>()
                         .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                        .Options))));
+                        .Options))
+                .PostConfigure<OtlpExporterOptions>(options => options.TimeoutMilliseconds = 0)));
 }

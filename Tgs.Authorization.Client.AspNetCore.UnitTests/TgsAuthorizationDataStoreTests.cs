@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Tgs.Authorization.Clients;
+using Valhalla.Authorization;
+using Xunit;
 
 namespace Tgs.Authorization.Client.AspNetCore.UnitTests;
 
@@ -49,5 +51,33 @@ public class TgsAuthorizationDataStoreTests
 
 		// Assert
 		Assert.NotNull(actual);
+	}
+
+	[Fact]
+	public async Task TgsAuthorizationDataStore_驗證授權是否通過()
+	{
+		// Arrange
+		var fakeAuthorizationClient = Substitute.For<IAuthorizationClient>();
+		var serviceProvider = new ServiceCollection()
+			.BuildServiceProvider();
+
+		var sut = new TgsAuthorizationDataStore(fakeAuthorizationClient, serviceProvider);
+
+		var system = "Test";
+		var functionId = Guid.NewGuid();
+		var accountId = Guid.NewGuid();
+
+		var fakeFunction = Substitute.For<IAuthorizationFunction>();
+
+		_ = fakeFunction.Id.Returns(functionId);
+
+		_ = fakeAuthorizationClient.AuthorizeAsync(Arg.Is(accountId), Arg.Is(functionId))
+			.Returns(true);
+
+		// Act
+		var actual = await sut.CheckHasPermissionAsync(system, fakeFunction, [new TgsAccount(accountId)]);
+
+		// Assert
+		Assert.True(actual);
 	}
 }

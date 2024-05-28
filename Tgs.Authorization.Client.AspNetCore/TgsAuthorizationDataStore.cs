@@ -37,9 +37,19 @@ internal class TgsAuthorizationDataStore(
 				func => func.Name == functionName,
 				cancellationToken);
 
-	public ValueTask<bool> CheckHasPermissionAsync(
+	public async ValueTask<bool> CheckHasPermissionAsync(
 		string system,
 		IAuthorizationFunction function,
 		IEnumerable<IAuthorizationIdentity> identities,
-		CancellationToken cancellationToken = default) => throw new NotImplementedException();
+		CancellationToken cancellationToken = default)
+	{
+		var account = identities.Cast<TgsAccount>().FirstOrDefault();
+
+		return account is null
+			? false
+			: await authorizationClient.AuthorizeAsync(
+			account.Id,
+			function.Id,
+			cancellationToken).ConfigureAwait(false);
+	}
 }
