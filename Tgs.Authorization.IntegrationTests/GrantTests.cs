@@ -143,4 +143,76 @@ public class GrantTests(ITestOutputHelper testOutputHelper)
         // Assert
         Assert.Null(actual);
     }
+
+    [Fact]
+    public async Task 整合測試_取得Account權限設定列表()
+    {
+        // Arrange
+        await using var web = AuthorizationTestHost.Instance
+            .WithWebHostBuilder(hostBuilder => hostBuilder
+                .ConfigureLogging(logging => logging
+                    .AddXUnit(testOutputHelper))
+                .ConfigureServices(services => services
+                    .AddHttpClientLoggingHandler()));
+
+        var client = web.CreateDefaultClient(web.Services.ResolveLoggingHandler<AuthorizationClient>());
+
+        var sut = new AuthorizationClient(client);
+
+        var accountId = Guid.NewGuid();
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        await dbContext.GrantRows.AddRangeAsync(
+            new GrantRow
+            {
+                AccountId = accountId,
+                FunctionId = Guid.NewGuid(),
+                Type = nameof(PermissionType.Allow)
+            });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.ListAccountGrantsAsync(accountId).ToArrayAsync();
+
+        // Assert
+        Assert.NotEmpty(actual);
+    }
+
+    [Fact]
+    public async Task 整合測試_取得Role權限設定列表()
+    {
+        // Arrange
+        await using var web = AuthorizationTestHost.Instance
+            .WithWebHostBuilder(hostBuilder => hostBuilder
+                .ConfigureLogging(logging => logging
+                    .AddXUnit(testOutputHelper))
+                .ConfigureServices(services => services
+                    .AddHttpClientLoggingHandler()));
+
+        var client = web.CreateDefaultClient(web.Services.ResolveLoggingHandler<AuthorizationClient>());
+
+        var sut = new AuthorizationClient(client);
+
+        var roleId = Guid.NewGuid();
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        await dbContext.RoleGrantRows.AddRangeAsync(
+            new RoleGrantRow
+            {
+                RoleId = roleId,
+                FunctionId = Guid.NewGuid(),
+                Type = nameof(PermissionType.Allow)
+            });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.ListRoleGrantsAsync(roleId).ToArrayAsync();
+
+        // Assert
+        Assert.NotEmpty(actual);
+    }
 }

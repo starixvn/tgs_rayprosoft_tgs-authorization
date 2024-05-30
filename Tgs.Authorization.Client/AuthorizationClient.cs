@@ -226,4 +226,22 @@ internal class AuthorizationClient(HttpClient httpClient) : IAuthorizationClient
 			.Do(response => response.EnsureSuccessStatusCode())
 			.SelectMany(response => response.Content
 				.ReadFromJsonAsAsyncEnumerable<Guid>(ClientUtility.SerializerOptions, cancellationToken));
+
+	public IAsyncEnumerable<AccountGrant> ListAccountGrantsAsync(Guid accountId, CancellationToken cancellationToken = default)
+		=> httpClient.GetAsync($"/grant/account/{accountId}", cancellationToken)
+			.ToAsyncEnumerable()
+			.Do(response => response.EnsureSuccessStatusCode())
+			.SelectMany(response => response.Content
+				.ReadFromJsonAsAsyncEnumerable<AccountGrant>(ClientUtility.SerializerOptions, cancellationToken))
+			.Where(grant => grant is not null)
+			.Select(grant => grant!);
+
+	public IAsyncEnumerable<RoleGrant> ListRoleGrantsAsync(Guid roleId, CancellationToken cancellationToken = default)
+		=> httpClient.GetAsync($"/grant/role/{roleId}", cancellationToken)
+			.ToAsyncEnumerable()
+			.Do(response => response.EnsureSuccessStatusCode())
+			.SelectMany(response => response.Content
+				.ReadFromJsonAsAsyncEnumerable<RoleGrant>(ClientUtility.SerializerOptions, cancellationToken))
+			.Where(grant => grant is not null)
+			.Select(grant => grant!);
 }

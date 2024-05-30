@@ -43,4 +43,8 @@ public interface IAuthorizationClient
 	ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<Guid> ListChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default);
+
+	IAsyncEnumerable<AccountGrant> ListAccountGrantsAsync(Guid accountId, CancellationToken cancellationToken = default);
+
+	IAsyncEnumerable<RoleGrant> ListRoleGrantsAsync(Guid roleId, CancellationToken cancellationToken = default);
 }

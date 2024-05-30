@@ -24,6 +24,10 @@ public interface ITgsRepository
 
 	IAsyncEnumerable<RoleGrant> GetFunctionGrantRolesAsync(Guid functionId, CancellationToken cancellationToken = default);
 
+	IAsyncEnumerable<AccountGrant> GetAccountFunctionGrantsAsync(Guid accountId, CancellationToken cancellationToken = default);
+
+	IAsyncEnumerable<RoleGrant> GetRoleFunctionGrantsAsync(Guid roleId, CancellationToken cancellationToken = default);
+
 	IAsyncEnumerable<Role> GetSystemAllRolesAsync(string system, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<SystemFunctionFeature<JsonDocument>> GetSystemFunctionFeaturesAsync(Guid functionId, CancellationToken cancellationToken = default);

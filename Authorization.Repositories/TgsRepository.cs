@@ -313,4 +313,24 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 			.Select(row => row.AccountId)
 			.ToAsyncEnumerable()
 			.Do(_ => cancellationToken.ThrowIfCancellationRequested());
+
+	public IAsyncEnumerable<AccountGrant> GetAccountFunctionGrantsAsync(Guid accountId, CancellationToken cancellationToken = default)
+		=> dbContext.GrantRows
+			.Where(row => row.AccountId == accountId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new AccountGrant(
+				row.FunctionId,
+				row.AccountId,
+				Enum.Parse<PermissionType>(row.Type)));
+
+	public IAsyncEnumerable<RoleGrant> GetRoleFunctionGrantsAsync(Guid roleId, CancellationToken cancellationToken = default)
+		=> dbContext.RoleGrantRows
+			.Where(row => row.RoleId == roleId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new RoleGrant(
+				row.FunctionId,
+				row.RoleId,
+				Enum.Parse<PermissionType>(row.Type)));
 }

@@ -23,6 +23,22 @@ public class GrantController : ControllerBase
 		return assignService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
 
+	[HttpGet("account/{accountId:Guid}", Name = "ListAccountGrants")]
+	public IAsyncEnumerable<AccountGrantViewModel> ListAccountGrantsAsync(
+		[FromServices] IQueryService<ListAccountGrantsQuery, AccountGrant> queryService,
+		Guid accountId)
+	{
+		var query = new ListAccountGrantsQuery(accountId);
+
+		return queryService.QueryAsync(query, HttpContext.RequestAborted)
+			.Select(grant => new AccountGrantViewModel
+			{
+				AccountId = grant.AccountId,
+				FunctionId = grant.FunctionId,
+				Type = grant.Type
+			});
+	}
+
 	[HttpPut("role/{roleId:Guid}", Name = "AssignRoleGrant")]
 	public ValueTask AssignRoleGrantAsync(
 		[FromServices] ICommandService<AssignRoleGrantCommand> assignService,
@@ -57,5 +73,21 @@ public class GrantController : ControllerBase
 		var command = new RemoveRoleGrantCommand(roleId, functionId);
 
 		return removeService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
+
+	[HttpGet("role/{roleId:guid}", Name = "ListRoleGrants")]
+	public IAsyncEnumerable<RoleGrantViewModel> ListRoleGrantsAsync(
+		[FromServices] IQueryService<ListRoleGrantsQuery, RoleGrant> queryService,
+		Guid roleId)
+	{
+		var query = new ListRoleGrantsQuery(roleId);
+
+		return queryService.QueryAsync(query, HttpContext.RequestAborted)
+			.Select(grant => new RoleGrantViewModel
+			{
+				FunctionId = grant.FunctionId,
+				RoleId = grant.RoleId,
+				Type = grant.Type
+			});
 	}
 }
