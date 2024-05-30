@@ -168,4 +168,62 @@ internal class AuthorizationClient(HttpClient httpClient) : IAuthorizationClient
 				.ToAsyncEnumerable())
 			.Take(1)
 			.SingleAsync(cancellationToken);
+
+	public async ValueTask AddAccountInRoleAsync(Guid accountId, Guid roleId, int priority, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.PutAsJsonAsync(
+			$"/role/account/{accountId}",
+			new
+			{
+				RoleId = roleId,
+				Priority = priority
+			},
+			ClientUtility.SerializerOptions,
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
+	public async ValueTask RemoveAccountInRoleAsync(Guid accountId, Guid roleId, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.DeleteAsync(
+			$"/role/account/{accountId}/{roleId}",
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
+	public IAsyncEnumerable<Guid> ListRoleAccountsAsync(Guid roleId, CancellationToken cancellationToken = default)
+		=> httpClient.GetAsync($"/role/account/{roleId}", cancellationToken)
+			.ToAsyncEnumerable()
+			.Do(response => response.EnsureSuccessStatusCode())
+			.SelectMany(response => response.Content
+				.ReadFromJsonAsAsyncEnumerable<Guid>(ClientUtility.SerializerOptions, cancellationToken));
+
+	public async ValueTask AddRoleInRoleAsync(Guid roleId, Guid parentRoleId, int priority, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.PutAsJsonAsync(
+			$"/role/in-role/{roleId}",
+			new { RoleId = parentRoleId, Priority = priority },
+			ClientUtility.SerializerOptions,
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
+	public async ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.DeleteAsync(
+			$"/role/in-role/{roleId}/{parentRoleId}",
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
+	public IAsyncEnumerable<Guid> ListChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default)
+		=> httpClient.GetAsync($"/role/in-role/{parentRoleId}", cancellationToken)
+			.ToAsyncEnumerable()
+			.Do(response => response.EnsureSuccessStatusCode())
+			.SelectMany(response => response.Content
+				.ReadFromJsonAsAsyncEnumerable<Guid>(ClientUtility.SerializerOptions, cancellationToken));
 }

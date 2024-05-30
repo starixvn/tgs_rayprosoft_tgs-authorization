@@ -44,5 +44,9 @@ public interface ITgsRepository
 
 	ValueTask UpsertRoleInRoleAsync(Guid roleId, Guid parentRoleId, int priority, CancellationToken cancellationToken = default);
 
+	IAsyncEnumerable<Guid> GetRoleAccountsAsync(Guid roleId, CancellationToken cancellationToken = default);
+
 	ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default);
+
+	IAsyncEnumerable<Guid> GetChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default);
 }

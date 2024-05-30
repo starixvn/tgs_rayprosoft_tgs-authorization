@@ -70,6 +70,16 @@ public class RoleController : ControllerBase
 		return removeService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
 
+	[HttpGet("account/{roleId:Guid}", Name = "ListRoleAccounts")]
+	public IAsyncEnumerable<Guid> ListRoleAccountsAsync(
+		[FromServices] IQueryService<ListRoleAccountsQuery, Guid> queryService,
+		Guid roleId)
+	{
+		var query = new ListRoleAccountsQuery(roleId);
+
+		return queryService.QueryAsync(query, HttpContext.RequestAborted);
+	}
+
 	[HttpPut("in-role/{roleId:Guid}", Name = "AddRoleInRole")]
 	public ValueTask AddRoleInRoleAsync(
 		[FromServices] ICommandService<AddRoleInRoleCommand> addService,
@@ -81,7 +91,7 @@ public class RoleController : ControllerBase
 		return addService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
 
-	[HttpDelete("in-role/{roleId:Guid}", Name = "RemoveRoleInRole")]
+	[HttpDelete("in-role/{roleId:Guid}/{parentRoleId:Guid}", Name = "RemoveRoleInRole")]
 	public ValueTask RemoveRoleInRoleAsync(
 		[FromServices] ICommandService<RemoveRoleInRoleCommand> removeService,
 		Guid roleId,
@@ -90,5 +100,15 @@ public class RoleController : ControllerBase
 		var command = new RemoveRoleInRoleCommand(roleId, parentRoleId);
 
 		return removeService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
+
+	[HttpGet("in-role/{parentRoleId:Guid}", Name = "ListChildrenRows")]
+	public IAsyncEnumerable<Guid> ListChildrenRowsAsync(
+		[FromServices] IQueryService<GetChildrenRolesQuery, Guid> queryService,
+		Guid parentRoleId)
+	{
+		var query = new GetChildrenRolesQuery(parentRoleId);
+
+		return queryService.QueryAsync(query, HttpContext.RequestAborted);
 	}
 }

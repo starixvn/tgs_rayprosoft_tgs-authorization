@@ -43,11 +43,10 @@ internal class TgsAuthorizationDataStore(
 		IEnumerable<IAuthorizationIdentity> identities,
 		CancellationToken cancellationToken = default)
 	{
-		var account = identities.Cast<TgsAccount>().FirstOrDefault();
+		var account = identities.OfType<TgsAccount>().FirstOrDefault();
 
-		return account is null
-			? false
-			: await authorizationClient.AuthorizeAsync(
+		return account is not null
+			&& await authorizationClient.AuthorizeAsync(
 			account.Id,
 			function.Id,
 			cancellationToken).ConfigureAwait(false);

@@ -283,7 +283,7 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 
 		row.Priority = priority;
 
-		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		_ = await dbContext.SaveChangesAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 	}
 
 	public async ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default)
@@ -299,4 +299,18 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 		}
 	}
+
+	public IAsyncEnumerable<Guid> GetChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default)
+		=> dbContext.RoleInRoles
+			.Where(row => row.ParentRoleId == parentRoleId)
+			.Select(row => row.RoleId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested());
+
+	public IAsyncEnumerable<Guid> GetRoleAccountsAsync(Guid roleId, CancellationToken cancellationToken = default)
+		=> dbContext.AccountRoles
+			.Where(row => row.RoleId == roleId)
+			.Select(row => row.AccountId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested());
 }
