@@ -103,12 +103,18 @@ public class RoleController : ControllerBase
 	}
 
 	[HttpGet("in-role/{parentRoleId:Guid}", Name = "ListChildrenRows")]
-	public IAsyncEnumerable<Guid> ListChildrenRowsAsync(
-		[FromServices] IQueryService<GetChildrenRolesQuery, Guid> queryService,
+	public IAsyncEnumerable<RoleViewModel> ListChildrenRowsAsync(
+		[FromServices] IQueryService<GetChildrenRolesQuery, Role> queryService,
 		Guid parentRoleId)
 	{
 		var query = new GetChildrenRolesQuery(parentRoleId);
 
-		return queryService.QueryAsync(query, HttpContext.RequestAborted);
+		return queryService.QueryAsync(query, HttpContext.RequestAborted)
+			.Select(role => new RoleViewModel
+			{
+				Id = role.Id,
+				Name = role.Name,
+				Priority = role.Priority
+			});
 	}
 }

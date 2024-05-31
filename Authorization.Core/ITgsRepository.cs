@@ -18,7 +18,7 @@ public interface ITgsRepository
 
 	ValueTask DeleteRoleFunctionGrantAsync(Guid roleId, Guid functionId, CancellationToken cancellationToken = default);
 
-	IAsyncEnumerable<Role> GetAccountAllRolesAsync(Guid accountId, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<Role> GetAccountAllRolesAsync(Guid accountId, bool recursive, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<AccountGrant> GetFunctionGrantAccountsAsync(Guid functionId, CancellationToken cancellationToken = default);
 
@@ -52,5 +52,5 @@ public interface ITgsRepository
 
 	ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default);
 
-	IAsyncEnumerable<Guid> GetChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<Role> GetChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default);
 }

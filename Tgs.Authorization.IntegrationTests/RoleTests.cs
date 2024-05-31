@@ -291,13 +291,22 @@ public class RoleTests(ITestOutputHelper testOutputHelper)
         var sut = new AuthorizationClient(client);
 
         var parentRoleId = Guid.NewGuid();
+        var roleId = Guid.NewGuid();
 
         var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        await dbContext.RoleRows
+            .AddRangeAsync(new RoleRow
+            {
+                Id = roleId,
+                Name = "test1",
+                System = "Test"
+            });
 
         await dbContext.RoleInRoles
             .AddRangeAsync(new RoleInRole
             {
-                RoleId = Guid.NewGuid(),
+                RoleId = roleId,
                 ParentRoleId = parentRoleId,
                 Priority = 100
             });

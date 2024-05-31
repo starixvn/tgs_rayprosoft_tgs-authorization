@@ -139,7 +139,7 @@ internal class AuthorizationClient(HttpClient httpClient) : IAuthorizationClient
 		_ = response.EnsureSuccessStatusCode();
 	}
 
-	public async ValueTask AssignRoleGrantAsync(Guid roleId, RoleGrantRequest request, CancellationToken cancellationToken = default)
+	public async ValueTask AssignRoleGrantAsync(Guid roleId, GrantRequest request, CancellationToken cancellationToken = default)
 	{
 		var response = await httpClient.PutAsJsonAsync(
 			$"/grant/role/{roleId}",
@@ -220,12 +220,14 @@ internal class AuthorizationClient(HttpClient httpClient) : IAuthorizationClient
 		_ = response.EnsureSuccessStatusCode();
 	}
 
-	public IAsyncEnumerable<Guid> ListChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default)
+	public IAsyncEnumerable<Role> ListChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default)
 		=> httpClient.GetAsync($"/role/in-role/{parentRoleId}", cancellationToken)
 			.ToAsyncEnumerable()
 			.Do(response => response.EnsureSuccessStatusCode())
 			.SelectMany(response => response.Content
-				.ReadFromJsonAsAsyncEnumerable<Guid>(ClientUtility.SerializerOptions, cancellationToken));
+				.ReadFromJsonAsAsyncEnumerable<Role>(ClientUtility.SerializerOptions, cancellationToken))
+			.Where(role => role is not null)
+			.Select(role => role!);
 
 	public IAsyncEnumerable<AccountGrant> ListAccountGrantsAsync(Guid accountId, CancellationToken cancellationToken = default)
 		=> httpClient.GetAsync($"/grant/account/{accountId}", cancellationToken)

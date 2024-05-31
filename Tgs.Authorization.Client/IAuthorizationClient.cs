@@ -30,7 +30,7 @@ public interface IAuthorizationClient
 
 	ValueTask RemoveAccountGrantAsync(Guid accountId, Guid functionId, CancellationToken cancellationToken = default);
 
-	ValueTask AssignRoleGrantAsync(Guid roleId, RoleGrantRequest request, CancellationToken cancellationToken = default);
+	ValueTask AssignRoleGrantAsync(Guid roleId, GrantRequest request, CancellationToken cancellationToken = default);
 
 	ValueTask RemoveRoleGrantAsync(Guid roleId, Guid functionId, CancellationToken cancellationToken = default);
 
@@ -42,7 +42,7 @@ public interface IAuthorizationClient
 
 	ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default);
 
-	IAsyncEnumerable<Guid> ListChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<Role> ListChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<AccountGrant> ListAccountGrantsAsync(Guid accountId, CancellationToken cancellationToken = default);
 

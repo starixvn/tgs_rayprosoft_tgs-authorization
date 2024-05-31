@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Tgs.Authorization.Repositories.Entities;
 
 namespace Tgs.Authorization.Repositories;
@@ -103,17 +104,42 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		}
 	}
 
-	public IAsyncEnumerable<Role> GetAccountAllRolesAsync(Guid accountId, CancellationToken cancellationToken = default)
+	public IAsyncEnumerable<Role> GetAccountAllRolesAsync(Guid accountId, bool recursive, CancellationToken cancellationToken = default)
+		=> recursive
+			? GetAccountRolesRecursiveAsync(accountId, cancellationToken)
+			: GetAccountDirectRolesAsync(accountId, cancellationToken);
+
+	public IAsyncEnumerable<AccountGrant> GetAccountFunctionGrantsAsync(Guid accountId, CancellationToken cancellationToken = default)
+		=> dbContext.GrantRows
+			.Where(row => row.AccountId == accountId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new AccountGrant(
+				row.FunctionId,
+				row.AccountId,
+				Enum.Parse<PermissionType>(row.Type)));
+
+	public IAsyncEnumerable<Role> GetChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default)
 	{
-		var query = from p in dbContext.AccountRoles
-					from role in dbContext.RoleRows
-					where p.AccountId == accountId
-						&& role.Id == p.RoleId
-					select role;
+		var query = from rf in dbContext.RoleInRoles
+					join role in dbContext.RoleRows on rf.RoleId equals role.Id
+					where rf.ParentRoleId == parentRoleId
+					select new
+					{
+						rf.RoleId,
+						role.Name,
+						role.System,
+						rf.Priority
+					};
 
 		return query.ToAsyncEnumerable()
 			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
-			.Select(row => new Role(row.Id, row.Name, row.System));
+			.Select(row => new Role(
+				row.RoleId,
+				row.Name,
+				row.System,
+				1,
+				row.Priority));
 	}
 
 	public IAsyncEnumerable<AccountGrant> GetFunctionGrantAccountsAsync(Guid functionId, CancellationToken cancellationToken = default)
@@ -134,8 +160,24 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 			.Select(row => new RoleGrant(
 				row.FunctionId,
 				row.RoleId,
-				Enum.Parse<PermissionType>(row.Type),
-				100));
+				Enum.Parse<PermissionType>(row.Type)));
+
+	public IAsyncEnumerable<Guid> GetRoleAccountsAsync(Guid roleId, CancellationToken cancellationToken = default)
+		=> dbContext.AccountRoles
+			.Where(row => row.RoleId == roleId)
+			.Select(row => row.AccountId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested());
+
+	public IAsyncEnumerable<RoleGrant> GetRoleFunctionGrantsAsync(Guid roleId, CancellationToken cancellationToken = default)
+		=> dbContext.RoleGrantRows
+			.Where(row => row.RoleId == roleId)
+			.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new RoleGrant(
+				row.FunctionId,
+				row.RoleId,
+				Enum.Parse<PermissionType>(row.Type)));
 
 	public IAsyncEnumerable<Role> GetSystemAllRolesAsync(string system, CancellationToken cancellationToken = default)
 		=> dbContext.RoleRows
@@ -186,6 +228,34 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 	}
 
+	public async ValueTask RemoveAccountInRoleAsync(Guid accountId, Guid roleId, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.AccountRoles.FindAsync(
+			[accountId, roleId],
+			cancellationToken).ConfigureAwait(false);
+
+		if (row is not null)
+		{
+			dbContext.AccountRoles.Remove(row);
+
+			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		}
+	}
+
+	public async ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.RoleInRoles.FindAsync(
+			[roleId, parentRoleId],
+			cancellationToken).ConfigureAwait(false);
+
+		if (row is not null)
+		{
+			dbContext.RoleInRoles.Remove(row);
+
+			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		}
+	}
+
 	public async ValueTask RenameFunctionAsync(Guid functionId, string newName, CancellationToken cancellationToken = default)
 	{
 		var row = await dbContext.FunctionRows.FindAsync(
@@ -218,24 +288,6 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 	}
 
-	public async ValueTask UpsertRoleFunctionGrantAsync(RoleGrant grant, CancellationToken cancellationToken = default)
-	{
-		var row = await dbContext.RoleGrantRows.FindAsync(
-			[grant.RoleId, grant.FunctionId],
-			cancellationToken).ConfigureAwait(false)
-			?? (await dbContext.RoleGrantRows.AddAsync(
-				new RoleGrantRow
-				{
-					RoleId = grant.RoleId,
-					FunctionId = grant.FunctionId,
-				},
-				cancellationToken).ConfigureAwait(false)).Entity;
-
-		row.Type = grant.Type.ToString();
-
-		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-	}
-
 	public async ValueTask UpsertAccountInRoleAsync(Guid accountId, Guid roleId, int priority, CancellationToken cancellationToken = default)
 	{
 		var row = await dbContext.AccountRoles.FindAsync(
@@ -254,18 +306,22 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 	}
 
-	public async ValueTask RemoveAccountInRoleAsync(Guid accountId, Guid roleId, CancellationToken cancellationToken = default)
+	public async ValueTask UpsertRoleFunctionGrantAsync(RoleGrant grant, CancellationToken cancellationToken = default)
 	{
-		var row = await dbContext.AccountRoles.FindAsync(
-			[accountId, roleId],
-			cancellationToken).ConfigureAwait(false);
+		var row = await dbContext.RoleGrantRows.FindAsync(
+			[grant.RoleId, grant.FunctionId],
+			cancellationToken).ConfigureAwait(false)
+			?? (await dbContext.RoleGrantRows.AddAsync(
+				new RoleGrantRow
+				{
+					RoleId = grant.RoleId,
+					FunctionId = grant.FunctionId,
+				},
+				cancellationToken).ConfigureAwait(false)).Entity;
 
-		if (row is not null)
-		{
-			dbContext.AccountRoles.Remove(row);
+		row.Type = grant.Type.ToString();
 
-			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-		}
+		_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 	}
 
 	public async ValueTask UpsertRoleInRoleAsync(Guid roleId, Guid parentRoleId, int priority, CancellationToken cancellationToken = default)
@@ -286,51 +342,83 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 		_ = await dbContext.SaveChangesAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 	}
 
-	public async ValueTask RemoveRoleInRoleAsync(Guid roleId, Guid parentRoleId, CancellationToken cancellationToken = default)
+	private IAsyncEnumerable<Role> GetAccountDirectRolesAsync(Guid accountId, CancellationToken cancellationToken = default)
 	{
-		var row = await dbContext.RoleInRoles.FindAsync(
-			[roleId, parentRoleId],
-			cancellationToken).ConfigureAwait(false);
+		var query = from p in dbContext.AccountRoles
+					from role in dbContext.RoleRows
+					where p.AccountId == accountId
+						  && role.Id == p.RoleId
+					select role;
 
-		if (row is not null)
-		{
-			dbContext.RoleInRoles.Remove(row);
-
-			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-		}
+		return query.ToAsyncEnumerable()
+			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
+			.Select(row => new Role(row.Id, row.Name, row.System));
 	}
 
-	public IAsyncEnumerable<Guid> GetChildrenRolesAsync(Guid parentRoleId, CancellationToken cancellationToken = default)
-		=> dbContext.RoleInRoles
-			.Where(row => row.ParentRoleId == parentRoleId)
-			.Select(row => row.RoleId)
-			.ToAsyncEnumerable()
+	private IAsyncEnumerable<Role> GetAccountRolesRecursiveAsync(Guid accountId, CancellationToken cancellationToken = default)
+	{
+		var query = dbContext.Set<Role>()
+			.FromSqlInterpolated($"""
+				WITH RECURSIVE AR(role_id, priority)
+				AS
+				(
+					SELECT
+						role_id,
+						priority
+					FROM
+						tgs2.account_roles
+					WHERE
+						account_id = {accountId}
+				),
+				RR(role_id, level, priority)
+				AS
+				(
+					SELECT
+						RIR.role_id,
+						2 AS level,
+						RIR.priority
+					FROM
+						tgs2.role_in_roles AS RIR
+						JOIN
+						AR ON RIR.parent_role_id = AR.role_id
+					UNION ALL
+					SELECT
+						RIR.role_id,
+						RR.level + 1 AS level,
+						RIR.priority
+					FROM
+						tgs2.role_in_roles AS RIR
+						JOIN
+						RR ON RIR.parent_role_id = RR.role_id
+				)
+				SELECT
+					R.id,
+					R.name,
+					R.system,
+					RF.level,
+					RF.priority
+				FROM
+					tgs2.roles AS R
+					JOIN
+					(
+						SELECT
+							role_id,
+							1 AS level,
+							priority
+						FROM
+							AR
+						UNION ALL
+						SELECT
+							role_id,
+							level,
+							priority
+						FROM
+							RR
+					) AS RF ON R.id = RF.role_id
+			""")
+			.AsNoTracking();
+
+		return query.ToAsyncEnumerable()
 			.Do(_ => cancellationToken.ThrowIfCancellationRequested());
-
-	public IAsyncEnumerable<Guid> GetRoleAccountsAsync(Guid roleId, CancellationToken cancellationToken = default)
-		=> dbContext.AccountRoles
-			.Where(row => row.RoleId == roleId)
-			.Select(row => row.AccountId)
-			.ToAsyncEnumerable()
-			.Do(_ => cancellationToken.ThrowIfCancellationRequested());
-
-	public IAsyncEnumerable<AccountGrant> GetAccountFunctionGrantsAsync(Guid accountId, CancellationToken cancellationToken = default)
-		=> dbContext.GrantRows
-			.Where(row => row.AccountId == accountId)
-			.ToAsyncEnumerable()
-			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
-			.Select(row => new AccountGrant(
-				row.FunctionId,
-				row.AccountId,
-				Enum.Parse<PermissionType>(row.Type)));
-
-	public IAsyncEnumerable<RoleGrant> GetRoleFunctionGrantsAsync(Guid roleId, CancellationToken cancellationToken = default)
-		=> dbContext.RoleGrantRows
-			.Where(row => row.RoleId == roleId)
-			.ToAsyncEnumerable()
-			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
-			.Select(row => new RoleGrant(
-				row.FunctionId,
-				row.RoleId,
-				Enum.Parse<PermissionType>(row.Type)));
+	}
 }

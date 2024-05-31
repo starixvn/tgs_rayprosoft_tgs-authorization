@@ -60,13 +60,13 @@ public class CheckAccountHasPermissionCommandServiceTests
             new Role(Guid.NewGuid(), "test1", "test")
         };
 
-        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId))
+        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId), Arg.Is(true))
             .Returns(accountRoles.ToAsyncEnumerable());
 
         _ = fakeTgsRepository.GetFunctionGrantRolesAsync(Arg.Is(command.FunctionId))
             .Returns(new[]
             {
-                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Allow, 100)
+                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Allow)
             }.ToAsyncEnumerable());
 
         // Act
@@ -97,13 +97,13 @@ public class CheckAccountHasPermissionCommandServiceTests
             new Role(Guid.NewGuid(), "test1", "test")
         };
 
-        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId))
+        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId), Arg.Is(true))
             .Returns(accountRoles.ToAsyncEnumerable());
 
         _ = fakeTgsRepository.GetFunctionGrantRolesAsync(Arg.Is(command.FunctionId))
             .Returns(new[]
             {
-                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Allow, 100)
+                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Allow)
             }.ToAsyncEnumerable());
 
         // Act
@@ -134,13 +134,13 @@ public class CheckAccountHasPermissionCommandServiceTests
             new Role(Guid.NewGuid(), "test1", "test")
         };
 
-        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId))
+        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId), Arg.Is(true))
             .Returns(accountRoles.ToAsyncEnumerable());
 
         _ = fakeTgsRepository.GetFunctionGrantRolesAsync(Arg.Is(command.FunctionId))
             .Returns(new[]
             {
-                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Deny, 100)
+                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Deny)
             }.ToAsyncEnumerable());
 
         // Act
@@ -151,7 +151,7 @@ public class CheckAccountHasPermissionCommandServiceTests
     }
 
     [Fact]
-    public async Task CheckAccountHasPermissionCommandService_檢查帳號是否有權限_角色權限判斷會以優先順序依序處理()
+    public async Task CheckAccountHasPermissionCommandService_檢查帳號是否有權限_角色權限判斷會先以Role所屬層級再以優先順序依序處理()
     {
         // Arrange
         var fakeTgsRepository = Substitute.For<ITgsRepository>();
@@ -162,18 +162,20 @@ public class CheckAccountHasPermissionCommandServiceTests
 
         var accountRoles = new[]
         {
-            new Role(Guid.NewGuid(), "test1", "test"),
-            new Role(Guid.NewGuid(), "test2", "test")
+            new Role(Guid.NewGuid(), "test1", "test", 1, 100),
+            new Role(Guid.NewGuid(), "test2", "test", 2, 200),
+            new Role(Guid.NewGuid(), "test3", "test", 1, 200)
         };
 
-        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId))
+        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId), Arg.Is(true))
             .Returns(accountRoles.ToAsyncEnumerable());
 
         _ = fakeTgsRepository.GetFunctionGrantRolesAsync(Arg.Is(command.FunctionId))
             .Returns(new[]
             {
-                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Allow, 200),
-                new RoleGrant(command.FunctionId, accountRoles[1].Id, PermissionType.Deny, 100)
+                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Deny),
+                new RoleGrant(command.FunctionId, accountRoles[1].Id, PermissionType.Deny),
+                new RoleGrant(command.FunctionId, accountRoles[2].Id, PermissionType.Allow)
             }.ToAsyncEnumerable());
 
         // Act

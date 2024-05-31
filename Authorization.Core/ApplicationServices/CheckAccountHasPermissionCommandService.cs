@@ -18,21 +18,27 @@ internal class CheckAccountHasPermissionCommandService(ITgsRepository tgsReposit
 
 		var allAccountPartOfRoles = await tgsRepository.GetAccountAllRolesAsync(
 			command.AccountId,
+			true,
 			cancellationToken)
-			.Select(role => role.Id)
-			.ToHashSetAsync(cancellationToken)
+			.OrderBy(role => role.Level)
+			.ThenByDescending(role => role.Priority)
+			.ToArrayAsync(cancellationToken)
 			.ConfigureAwait(false);
 
-		var accountRoleGrant = await tgsRepository.GetFunctionGrantRolesAsync(
+		var accountRoleGrants = await tgsRepository.GetFunctionGrantRolesAsync(
 			command.FunctionId,
 			cancellationToken)
-			.Where(grant => allAccountPartOfRoles.Contains(grant.RoleId))
-			.OrderByDescending(grant => grant.Priority)
-			.FirstOrDefaultAsync(cancellationToken)
+			.ToArrayAsync(cancellationToken)
 			.ConfigureAwait(false);
 
-		return accountRoleGrant is null
-			? accountGrant is not null
-			: accountRoleGrant.Type == PermissionType.Allow;
+		foreach (var role in allAccountPartOfRoles)
+		{
+			var grant = accountRoleGrants.FirstOrDefault(g => g.RoleId == role.Id);
+
+			if (grant is not null)
+				return grant.Type == PermissionType.Allow;
+		}
+
+		return false;
 	}
 }

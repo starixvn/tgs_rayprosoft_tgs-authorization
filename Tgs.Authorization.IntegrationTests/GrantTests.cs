@@ -93,7 +93,7 @@ public class GrantTests(ITestOutputHelper testOutputHelper)
 
         var roleId = Guid.NewGuid();
         var functionId = Guid.NewGuid();
-        var request = new RoleGrantRequest(functionId, Clients.PermissionType.Allow, 100);
+        var request = new GrantRequest(functionId, Clients.PermissionType.Allow);
 
         var dbContext = web.Services.GetRequiredService<TgsContext>();
 

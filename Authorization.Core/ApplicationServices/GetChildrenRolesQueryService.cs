@@ -2,8 +2,9 @@
 
 namespace Tgs.Authorization.ApplicationServices;
 
-internal class GetChildrenRolesQueryService(ITgsRepository tgsRepository) : IQueryService<GetChildrenRolesQuery, Guid>
+internal class GetChildrenRolesQueryService(ITgsRepository tgsRepository)
+	: IQueryService<GetChildrenRolesQuery, Role>
 {
-	public IAsyncEnumerable<Guid> QueryAsync(GetChildrenRolesQuery query, CancellationToken cancellationToken = default)
+	public IAsyncEnumerable<Role> QueryAsync(GetChildrenRolesQuery query, CancellationToken cancellationToken = default)
 		=> tgsRepository.GetChildrenRolesAsync(query.RoleId, cancellationToken);
 }
