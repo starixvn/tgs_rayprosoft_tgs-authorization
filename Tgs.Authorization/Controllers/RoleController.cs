@@ -2,6 +2,7 @@
 using Tgs.Authorization.ApplicationServices;
 using Tgs.Authorization.ViewModels;
 using Tgs.ServiceUtility;
+using Tgs.WebApi.Toolkits;
 
 namespace Tgs.Authorization.Controllers;
 
@@ -35,6 +36,7 @@ public class RoleController : ControllerBase
 		return createRoleService.GetAsync(command, HttpContext.RequestAborted);
 	}
 
+	[SuccessStatusCode(System.Net.HttpStatusCode.NoContent)]
 	[HttpDelete("{roleId:Guid}", Name = "DeleteRole")]
 	public ValueTask DeleteRoleAsync(
 		[FromServices] ICommandService<DeleteRoleCommand> deleteService,

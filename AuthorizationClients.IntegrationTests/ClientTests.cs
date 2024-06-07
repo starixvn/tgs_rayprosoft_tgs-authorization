@@ -1,10 +1,8 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
-using Castle.Components.DictionaryAdapter.Xml;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Tgs.Authorization.Clients;
 using Tgs.Authorization.Clients.DependencyInjection;
 using Valhalla.Authorization;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace AuthorizationClients.IntegrationTests;

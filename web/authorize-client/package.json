@@ -1,0 +1,23 @@
+{
+  "name": "authorize-client",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "type": "module",
+  "module": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@angular/common": "^18.0.1",
+    "@ngify/http": "^1.6.0",
+    "@types/node": "^20.14.1",
+    "typescript": "^5.4.5"
+  }
+}

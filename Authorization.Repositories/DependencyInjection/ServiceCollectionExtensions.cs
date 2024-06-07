@@ -11,7 +11,6 @@ public static class ServiceCollectionExtensions
 		this IServiceCollection services,
 		Action<DbContextOptionsBuilder> dbConfigure)
 		=> services
-			.AddDbContext<TgsContext>()
-			.Configure(dbConfigure)
+			.AddDbContext<TgsContext>(dbConfigure)
 			.AddScoped<ITgsRepository, TgsRepository>();
 }

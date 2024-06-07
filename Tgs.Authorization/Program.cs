@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Logs;
@@ -70,10 +71,14 @@ var builder = WebApplication.CreateBuilder(args);
 		.AddHealthChecks()
 		.Services
 		.AddProfileViewer();
+
+	builder.Services.AddHttpLogging(options => options.LoggingFields = HttpLoggingFields.All);
+
 }
 
 var app = builder.Build();
 {
+	app.UseHttpLogging();
 	app.MapControllers();
 	app.MapSwagger();
 	app.UseSwaggerUI();

@@ -1,0 +1,24 @@
+{
+  "name": "authorize-cs-test",
+  "version": "0.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@angular/common": "^18.0.2",
+    "@ngify/http": "^1.6.0",
+    "abort-controller": "^3.0.0",
+    "authorize-client": "file:../authorize-client/",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@angular/compiler": "^18.0.2",
+    "@angular/platform-server": "^18.0.2",
+    "typescript": "^5.4.5"
+  }
+}

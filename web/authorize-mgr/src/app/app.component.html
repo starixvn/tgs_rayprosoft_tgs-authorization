@@ -1,0 +1,10 @@
+<mat-toolbar class="app-header" color="primary">
+  <span>{{title}}</span>
+</mat-toolbar>
+
+<mat-drawer-container class="app-container">
+  <mat-drawer class="app-sidenav" mode="side">Drawer content</mat-drawer>
+  <mat-drawer-content>
+    <router-outlet />
+  </mat-drawer-content>
+</mat-drawer-container>

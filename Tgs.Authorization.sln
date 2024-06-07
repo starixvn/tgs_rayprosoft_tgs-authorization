@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization.Client.As
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.Authorization.IntegrationTests", "Tgs.Authorization.IntegrationTests\Tgs.Authorization.IntegrationTests.csproj", "{E2884991-68BC-4DDE-A7BA-735BAFCCE4A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.Authorization.Frontend.IntegrationTests", "Tgs.Authorization.Frontend.IntegrationTests\Tgs.Authorization.Frontend.IntegrationTests.csproj", "{DEE33451-CF0A-4670-AE6C-B4FCD97BB2B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{769F7A24-B38A-49C3-AC98-7B0F695ADBA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{769F7A24-B38A-49C3-AC98-7B0F695ADBA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{769F7A24-B38A-49C3-AC98-7B0F695ADBA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEE33451-CF0A-4670-AE6C-B4FCD97BB2B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEE33451-CF0A-4670-AE6C-B4FCD97BB2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEE33451-CF0A-4670-AE6C-B4FCD97BB2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEE33451-CF0A-4670-AE6C-B4FCD97BB2B2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7DB22B6-A2CB-40A7-9760-DB4F6C67CA63}.Release|Any CPU.ActiveCfg = Release|Any CPU

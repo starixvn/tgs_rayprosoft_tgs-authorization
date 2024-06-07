@@ -1,0 +1,22 @@
+%area {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.query {
+  @extend %area;
+  height: 300px;
+
+  mat-card-content {
+    height: 100vh;
+  }
+}
+
+.result {
+  @extend %area;
+  height: calc(100vh - 301px - var(--app-header-height));
+  mat-card-content {
+    height: calc(100vh - 301px - var(--app-header-height));
+    overflow: auto;
+  }
+}
