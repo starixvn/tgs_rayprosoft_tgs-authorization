@@ -1,3 +1,3 @@
 ﻿using PhoenixToolkits.Xunit.AssemblyFixture;
 
-[assembly: AssemblyFixtureTestFramework]
+[assembly: AssemblyFixtureTestFramework(ParallelAllCases = true)]
