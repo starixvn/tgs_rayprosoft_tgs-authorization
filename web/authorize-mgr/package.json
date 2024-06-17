@@ -23,7 +23,7 @@
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3",
-    "authorize-client": "../authorize-client"
+    "authorize-client": "file:../authorize-client"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.0.2",

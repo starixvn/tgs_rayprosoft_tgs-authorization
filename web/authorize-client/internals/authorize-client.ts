@@ -1,7 +1,6 @@
 import type { CreateRole, Role } from "../models/role";
-import { Observable, concatMap, filter, map, of, tap, catchError, firstValueFrom } from "rxjs";
-import type { HttpClient, HttpResponse } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
+import { Observable, concatMap, map } from "rxjs";
+import type { HttpClient } from '@angular/common/http';
 
 export class AuthorizeClient {
     constructor(private _http: HttpClient) {

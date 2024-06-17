@@ -1,5 +1,5 @@
 import { LayoutModule } from '@angular/cdk/layout';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +9,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
+import { AuthorizeClient, Role } from '../../services/authorize-client';
+import { firstValueFrom, toArray } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateRoleComponent, CreateRoleDialogInput, CreateRoleDialogResult } from '../components/create-role/create-role.component';
+
+interface ListRoleFormData {
+    system: string;
+}
 
 @Component({
     selector: 'app-list-role',
@@ -31,104 +39,47 @@ import { MatTableModule } from '@angular/material/table';
 export class ListRoleComponent {
     displayedColumns: string[] = ['priority', 'name', 'id'];
     queryForm: FormGroup;
-    sampleData = [
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-        {
-            id: "1",
-            name: "Role1",
-            priority: 100
-        },
-        {
-            id: "2",
-            name: "Role2",
-            priority: 100
-        },
-    ];
+    listView: Role[] = [];
+    private readonly _dialog = inject(MatDialog);
 
     constructor(
-        fb: FormBuilder
+        fb: FormBuilder,
+        private _client: AuthorizeClient
     ) {
         this.queryForm = fb.group({
             system: ''
         });
+    }
+
+    public query() {
+        let queryFormData: ListRoleFormData = this.queryForm.value;
+
+        this._client.getRolesBySystem(queryFormData.system)
+            .pipe(
+                toArray()
+            )
+            .subscribe(roles => this.listView = roles);
+    }
+
+    public showCreateRole() {
+        let queryFormData: ListRoleFormData = this.queryForm.value;
+
+        const dialogRef = this._dialog.open<CreateRoleComponent, CreateRoleDialogInput, CreateRoleDialogResult>(
+            CreateRoleComponent,
+            {
+                data: {
+                    system: queryFormData.system
+                }
+            });
+
+        dialogRef.afterClosed().subscribe(async result => {
+            if (result !== undefined) {
+                await firstValueFrom(this._client.createRole(
+                    result.system,
+                    {
+                        name: result.roleName
+                    }));
+            }
+        })
     }
 }

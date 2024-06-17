@@ -21,7 +21,8 @@ public class RoleController : ControllerBase
 			.Select(role => new RoleViewModel
 			{
 				Id = role.Id,
-				Name = role.Name
+				Name = role.Name,
+				Priority = role.Priority
 			});
 	}
 
