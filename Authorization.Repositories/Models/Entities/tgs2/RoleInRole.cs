@@ -2,7 +2,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 
 namespace Tgs.Authorization.Repositories.Entities;
 
@@ -13,6 +12,4 @@ public partial class RoleInRole
     public Guid ParentRoleId { get; set; }
 
     public int Priority { get; set; }
-
-    public LTree? Hierarchy { get; set; }
 }

@@ -13,6 +13,7 @@ import { AuthorizeClient, Role } from '../../services/authorize-client';
 import { firstValueFrom, toArray } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateRoleComponent, CreateRoleDialogInput, CreateRoleDialogResult } from '../components/create-role/create-role.component';
+import { ChangePriorityInput, ChangePriorityResult, ChangeRolePriorityComponent } from '../components/change-role-priority/change-role-priority.component';
 
 interface ListRoleFormData {
     system: string;
@@ -80,6 +81,28 @@ export class ListRoleComponent {
                         name: result.roleName
                     }));
             }
-        })
+        });
+    }
+
+    public showChangeRolePriority(id: string, priority: number) {
+        const dialogRef = this._dialog.open<ChangeRolePriorityComponent, ChangePriorityInput, ChangePriorityResult>(
+            ChangeRolePriorityComponent,
+            {
+                data: {
+                    priority
+                }
+            });
+
+        dialogRef.afterClosed().subscribe(async result => {
+            if (result !== undefined) {
+                await firstValueFrom(this._client.setRolePriority(id, result.priority));
+            }
+        });
+    }
+
+    public async deleteRole(id: string) {
+        await firstValueFrom(this._client.deleteRole(id));
+
+        this.query();
     }
 }

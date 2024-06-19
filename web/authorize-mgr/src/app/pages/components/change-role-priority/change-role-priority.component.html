@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>變更排序</h2>
+<mat-dialog-content>
+  <form [formGroup]="changePriorityForm" class="form-content">
+    <mat-form-field>
+      <mat-label>優先權</mat-label>
+      <input matInput formControlName="priority" required>
+      <mat-hint align="end"
+        *ngIf="changePriorityForm.controls['priority'].touched && changePriorityForm.controls['priority'].hasError('required')">
+        <span class="error-hint">必須設定優先權</span>
+      </mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="cancel()">取消</button>
+  <button mat-button (click)="apply()" [disabled]="!changePriorityForm.valid">套用</button>
+</mat-dialog-actions>

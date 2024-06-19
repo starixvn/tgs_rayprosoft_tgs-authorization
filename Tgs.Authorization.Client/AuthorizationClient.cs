@@ -246,4 +246,18 @@ internal class AuthorizationClient(HttpClient httpClient) : IAuthorizationClient
 				.ReadFromJsonAsAsyncEnumerable<RoleGrant>(ClientUtility.SerializerOptions, cancellationToken))
 			.Where(grant => grant is not null)
 			.Select(grant => grant!);
+
+	public async ValueTask SetRolePriorityAsync(Guid roleId, int priority, CancellationToken cancellationToken = default)
+	{
+		var response = await httpClient.PatchAsJsonAsync(
+			$"/role/{roleId}",
+			new
+			{
+				Priority = priority
+			},
+			ClientUtility.SerializerOptions,
+			cancellationToken).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
 }

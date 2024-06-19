@@ -12,4 +12,6 @@ public partial class RoleRow
     public string Name { get; set; } = null!;
 
     public string System { get; set; } = null!;
+
+    public int Priority { get; set; }
 }

@@ -47,4 +47,6 @@ public interface IAuthorizationClient
 	IAsyncEnumerable<AccountGrant> ListAccountGrantsAsync(Guid accountId, CancellationToken cancellationToken = default);
 
 	IAsyncEnumerable<RoleGrant> ListRoleGrantsAsync(Guid roleId, CancellationToken cancellationToken = default);
+
+	ValueTask SetRolePriorityAsync(Guid roleId, int priority, CancellationToken cancellationToken = default);
 }

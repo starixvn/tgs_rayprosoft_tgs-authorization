@@ -184,7 +184,11 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 			.Where(row => row.System == system)
 			.ToAsyncEnumerable()
 			.Do(_ => cancellationToken.ThrowIfCancellationRequested())
-			.Select(row => new Role(row.Id, row.Name, row.System));
+			.Select(row => new Role(
+				row.Id,
+				row.Name,
+				row.System,
+				Priority: row.Priority));
 
 	public IAsyncEnumerable<SystemFunctionFeature<JsonDocument>> GetSystemFunctionFeaturesAsync(
 		Guid functionId,
@@ -420,5 +424,19 @@ internal class TgsRepository(TgsContext dbContext) : ITgsRepository
 
 		return query.ToAsyncEnumerable()
 			.Do(_ => cancellationToken.ThrowIfCancellationRequested());
+	}
+
+	public async ValueTask SetRolePriorityAsync(Guid roleId, int priority, CancellationToken cancellationToken = default)
+	{
+		var row = await dbContext.RoleRows.FindAsync(
+			[roleId],
+			cancellationToken).ConfigureAwait(false);
+
+		if (row is not null)
+		{
+			row.Priority = priority;
+
+			_ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		}
 	}
 }

@@ -48,6 +48,17 @@ public class RoleController : ControllerBase
 		return deleteService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
 
+	[HttpPatch("{roleId:Guid}", Name = "ChangeRolePriority")]
+	public ValueTask ChangeRolePriorityAsync(
+		[FromServices] ICommandService<ChangeRolePriorityCommand> changeService,
+		Guid roleId,
+		[FromBody] ChangeRolePriorityViewModel viewModel)
+	{
+		var command = new ChangeRolePriorityCommand(roleId, viewModel.Priority);
+
+		return changeService.ExecuteAsync(command, HttpContext.RequestAborted);
+	}
+
 	[HttpPut("account/{accountId:Guid}", Name = "AddAcountInRole")]
 	public ValueTask AddAccountInRoleAsync(
 		[FromServices] ICommandService<AddAccountInRoleCommand> addService,

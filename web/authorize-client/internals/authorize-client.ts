@@ -41,4 +41,22 @@ export class AuthorizeClient {
                 map(res => res.body)
             );
     }
+
+    public setRolePriority(roleId: string, priority: number): Observable<void | null> {
+        return this._http.patch<void>(
+            `/api/role/${roleId}`,
+            {
+                priority
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                observe: 'response',
+                responseType: 'json'
+            })
+            .pipe(
+                map(res => res.body)
+            );
+    }
 }

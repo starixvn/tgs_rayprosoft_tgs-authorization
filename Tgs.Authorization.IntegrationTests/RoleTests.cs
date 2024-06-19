@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tgs.Authorization.Clients;
 using Tgs.Authorization.Repositories.Entities;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Tgs.Authorization.IntegrationTests;
@@ -318,5 +319,43 @@ public class RoleTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         Assert.NotEmpty(actual);
+    }
+
+    [Fact]
+    public async Task 整合測試_設定角色優先權()
+    {
+        // Arrange
+        await using var web = AuthorizationTestHost.Instance
+            .WithWebHostBuilder(hostBuilder => hostBuilder
+                .ConfigureLogging(logging => logging
+                    .AddXUnit(testOutputHelper))
+                .ConfigureServices(services => services
+                    .AddHttpClientLoggingHandler()));
+
+        var client = web.CreateDefaultClient(web.Services.ResolveLoggingHandler<AuthorizationClient>());
+
+        var sut = new AuthorizationClient(client);
+
+        var roleId = Guid.NewGuid();
+
+        var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+        await dbContext.RoleRows.AddRangeAsync(
+            new RoleRow
+            {
+                Id = roleId,
+                Name = "Test1",
+                System = "Test",
+                Priority = 100
+            });
+
+        _ = await dbContext.SaveChangesAsync();
+
+        // Act
+        await sut.SetRolePriorityAsync(roleId, 200);
+        var actual = await dbContext.RoleRows.FindAsync([roleId]);
+
+        // Assert
+        Assert.Equal(200, actual!.Priority);
     }
 }

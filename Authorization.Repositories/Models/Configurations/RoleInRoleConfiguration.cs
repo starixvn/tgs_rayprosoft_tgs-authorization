@@ -17,11 +17,8 @@ namespace Tgs.Authorization.Repositories.Entities.Configurations
 
             entity.ToTable("role_in_roles", "tgs2");
 
-            entity.HasIndex(e => e.Hierarchy, "ix_role_in_roles_hierarchy").HasMethod("gist");
-
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.ParentRoleId).HasColumnName("parent_role_id");
-            entity.Property(e => e.Hierarchy).HasColumnName("hierarchy");
             entity.Property(e => e.Priority).HasColumnName("priority");
 
             OnConfigurePartial(entity);

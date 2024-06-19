@@ -36,7 +36,8 @@ public class RoleTests(NodeJsFixture nodeJsFixture, ITestOutputHelper testOutput
 			{
 				Id = Guid.NewGuid(),
 				Name = "Group1",
-				System = system
+				System = system,
+				Priority = 1
 			}
 		};
 
@@ -48,7 +49,8 @@ public class RoleTests(NodeJsFixture nodeJsFixture, ITestOutputHelper testOutput
 			row => new RoleViewModel
 			{
 				Id = row.Id,
-				Name = row.Name
+				Name = row.Name,
+				Priority = row.Priority
 			})
 			.ToArray()
 			.ToExpectedObject();
@@ -187,5 +189,58 @@ public class RoleTests(NodeJsFixture nodeJsFixture, ITestOutputHelper testOutput
 
 		// Assert
 		Assert.Null(actual);
+	}
+
+	[Fact]
+	public async Task 前端整合測試_設定角色優先權()
+	{
+		// Arrange
+		var channelName = Guid.NewGuid().ToString();
+
+		using var web = AuthorizationTestHost.BuildTestHost(
+			channelName,
+			hostBuilder => hostBuilder
+				.ConfigureLogging(logging => logging
+					.AddXUnit(testOutputHelper)));
+
+		var roleId = Guid.NewGuid();
+
+		var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+		await dbContext.RoleRows.AddRangeAsync(
+			new RoleRow
+			{
+				Id = roleId,
+				Name = "Test1",
+				System = "Test",
+				Priority = 100
+			});
+
+		_ = await dbContext.SaveChangesAsync();
+
+		var nodejs = nodeJsFixture.BuildNodeJsService();
+
+		var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+		var nodeModule = """
+			const utils = require('./utils.cjs');
+			const firstValueFrom = require('rxjs').firstValueFrom;
+			const map = require('rxjs').map;
+
+			module.exports = async (channelName, isWindows, roleId, priority) => {
+				let m = await utils();
+				let client = new m.AuthorizeClient(m.buildHttpClient(channelName, isWindows));
+
+				await firstValueFrom(client.setRolePriority(roleId, priority));
+			};
+			""";
+
+		// Act
+		await nodejs.InvokeFromStringAsync(
+			nodeModule,
+			args: [channelName, isWindows, roleId, 200]);
+		var actual = await dbContext.RoleRows.FindAsync([roleId]);
+
+		// Assert
+		Assert.Equal(200, actual!.Priority);
 	}
 }

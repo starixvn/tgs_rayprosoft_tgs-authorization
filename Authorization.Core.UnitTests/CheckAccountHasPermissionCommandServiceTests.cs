@@ -1,5 +1,7 @@
-﻿using Tgs.Authorization;
+﻿using System;
+using Tgs.Authorization;
 using Tgs.Authorization.ApplicationServices;
+using Xunit;
 
 namespace Authorization.Core.UnitTests;
 
@@ -176,6 +178,39 @@ public class CheckAccountHasPermissionCommandServiceTests
                 new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Deny),
                 new RoleGrant(command.FunctionId, accountRoles[1].Id, PermissionType.Deny),
                 new RoleGrant(command.FunctionId, accountRoles[2].Id, PermissionType.Allow)
+            }.ToAsyncEnumerable());
+
+        // Act
+        var actual = await sut.GetAsync(command);
+
+        // Assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public async Task CheckAccountHasPermissionCommandService_檢查帳號是否有權限_角色權限判斷同層級會以優先權越大越優先()
+    {
+        // Arrange
+        var fakeTgsRepository = Substitute.For<ITgsRepository>();
+
+        var sut = new CheckAccountHasPermissionCommandService(fakeTgsRepository);
+
+        var command = new CheckAccountHasPermissionCommand(Guid.NewGuid(), Guid.NewGuid());
+
+        var accountRoles = new[]
+        {
+            new Role(Guid.NewGuid(), "test1", "test", 1, 100),
+            new Role(Guid.NewGuid(), "test3", "test", 1, 200)
+        };
+
+        _ = fakeTgsRepository.GetAccountAllRolesAsync(Arg.Is(command.AccountId), Arg.Is(true))
+            .Returns(accountRoles.ToAsyncEnumerable());
+
+        _ = fakeTgsRepository.GetFunctionGrantRolesAsync(Arg.Is(command.FunctionId))
+            .Returns(new[]
+            {
+                new RoleGrant(command.FunctionId, accountRoles[0].Id, PermissionType.Deny),
+                new RoleGrant(command.FunctionId, accountRoles[1].Id, PermissionType.Allow)
             }.ToAsyncEnumerable());
 
         // Act
