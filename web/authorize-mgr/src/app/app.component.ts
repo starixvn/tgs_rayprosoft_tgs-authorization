@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
     selector: 'app-root',
@@ -15,7 +16,8 @@ import { MatButtonModule } from '@angular/material/button';
         MatSidenavModule,
         MatIconModule,
         MatExpansionModule,
-        MatButtonModule
+        MatButtonModule,
+        RouterModule,
     ],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'

@@ -189,6 +189,8 @@ public class RoleTests(NodeJsFixture nodeJsFixture, ITestOutputHelper testOutput
 
 		// Assert
 		Assert.Null(actual);
+
+		_ = web.StopAsync();
 	}
 
 	[Fact]
@@ -242,5 +244,7 @@ public class RoleTests(NodeJsFixture nodeJsFixture, ITestOutputHelper testOutput
 
 		// Assert
 		Assert.Equal(200, actual!.Priority);
+
+		_ = web.StopAsync();
 	}
 }

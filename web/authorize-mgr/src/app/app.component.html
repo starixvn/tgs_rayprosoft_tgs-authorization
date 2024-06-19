@@ -12,13 +12,13 @@
         <mat-expansion-panel-header>
           <mat-panel-title> Function </mat-panel-title>
         </mat-expansion-panel-header>
-        <a mat-button class="nav-button">列表</a>
+        <a mat-button class="nav-button" [routerLink]="['/ListFunction']" routerLinkActive="router-link-active">列表</a>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title> Role </mat-panel-title>
         </mat-expansion-panel-header>
-        <a mat-button class="nav-button">列表</a>
+        <a mat-button class="nav-button" [routerLink]="['/ListRole']" routerLinkActive="router-link-active" >列表</a>
       </mat-expansion-panel>
     </mat-accordion>
   </mat-drawer>

@@ -1,1 +1,48 @@
-<p>list-function works!</p>
+<mat-card class="form-query">
+  <mat-card-header>
+    <h3>功能列表</h3>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="queryForm">
+      <mat-form-field>
+        <mat-label>System</mat-label>
+        <input matInput formControlName="system" required>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-flat-button color="primary" (click)="query()"
+      [disabled]="!queryForm.controls['system'].valid">查詢</button>
+  </mat-card-actions>
+</mat-card>
+<mat-divider></mat-divider>
+<mat-card class="form-result" style="flex:content">
+  <mat-card-header style="margin-bottom: 15px;">
+    <button mat-mini-fab >
+      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
+    </button>
+  </mat-card-header>
+  <mat-card-content>
+    <table mat-table [dataSource]="listView">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef style="width: 100em;">
+          <h4>功能名稱</h4>
+        </th>
+        <td mat-cell *matCellDef="let element">{{element.name}}</td>
+      </ng-container>
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="assent" (click)="showRenameFunction()">
+            <mat-icon aria-hidden="false" aria-label="Edit Role priority" fontIcon="edit"></mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteFunction(element.id)">
+            <mat-icon aria-hidden="false" aria-label="Delete Role" fontIcon="delete"></mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>

@@ -1,6 +1,7 @@
 import type { CreateRole, Role } from "../models/role";
 import { Observable, concatMap, map } from "rxjs";
 import type { HttpClient } from '@angular/common/http';
+import { SystemFunction } from "../models/system-function";
 
 export class AuthorizeClient {
     constructor(private _http: HttpClient) {
@@ -57,6 +58,14 @@ export class AuthorizeClient {
             })
             .pipe(
                 map(res => res.body)
+            );
+    }
+
+    public getFunctionsBySystem(system:string):Observable<SystemFunction> {
+        return this._http
+            .get<SystemFunction[]>(`/api/function/${system}`, { observe: 'response' })
+            .pipe(
+                concatMap(res => res.body ?? [])
             );
     }
 }
