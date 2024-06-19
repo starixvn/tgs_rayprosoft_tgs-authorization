@@ -1,9 +1,27 @@
 <mat-toolbar class="app-header" color="primary">
+  <button mat-icon-button class="menu-button" (click)="drawer.toggle()">
+    <mat-icon aria-hidden="false" aria-label="Toggle menu" fontIcon="menu"></mat-icon>
+  </button>
   <span>{{title}}</span>
 </mat-toolbar>
 
 <mat-drawer-container class="app-container">
-  <mat-drawer class="app-sidenav" mode="side">Drawer content</mat-drawer>
+  <mat-drawer #drawer class="app-sidenav" mode="side" opened>
+    <mat-accordion class="example-headers-align" multi>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Function </mat-panel-title>
+        </mat-expansion-panel-header>
+        <a mat-button class="nav-button">列表</a>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Role </mat-panel-title>
+        </mat-expansion-panel-header>
+        <a mat-button class="nav-button">列表</a>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-drawer>
   <mat-drawer-content>
     <router-outlet />
   </mat-drawer-content>

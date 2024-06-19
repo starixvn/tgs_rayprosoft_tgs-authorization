@@ -25,6 +25,7 @@ $light-theme: mat.define-theme((
 :root {
   @include mat.all-component-themes($light-theme);
   --app-header-height: 64px;
+  --app-header-color: darkturquoise;
 }
 
 %header {
@@ -46,10 +47,11 @@ $light-theme: mat.define-theme((
 
 .dark {
   @include mat.all-component-colors($dark-theme);
+  --app-header-color: darkslategrey;
 
   .app-header {
     @extend %header;
-    background-color: darkslategrey;
+    background-color: var(--app-header-color);
   }
 
   .app-container {
