@@ -237,4 +237,62 @@ public class FunctionTests(NodeJsFixture nodeJsFixture, ITestOutputHelper testOu
 		// Assert
 		Assert.Null(actual);
 	}
+
+	[Fact]
+	public async Task 前端整合測試_取得一個Function的Feature設定列表()
+	{
+		// Arrange
+		var channelName = Guid.NewGuid().ToString();
+
+		using var web = AuthorizationTestHost.BuildTestHost(
+			channelName,
+			hostBuilder => hostBuilder
+				.ConfigureLogging((_, logging) => logging
+					.ClearProviders()
+					.AddXUnit(testOutputHelper)));
+
+		var functionId = Guid.NewGuid();
+
+		var dbContext = web.Services.GetRequiredService<TgsContext>();
+
+		await dbContext.FeatureRows.AddRangeAsync(
+			new FeatureRow
+			{
+				Id = Guid.NewGuid(),
+				Name = "feat1",
+				FunctionId = functionId,
+				Settings = "{}",
+				Type = "Http"
+			});
+
+		_ = await dbContext.SaveChangesAsync();
+
+		var nodejs = nodeJsFixture.BuildNodeJsService();
+
+		var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+		var nodeModule = """
+			const utils = require('./utils.cjs');
+			const toArray = require('rxjs').toArray;
+			const firstValueFrom = require('rxjs').firstValueFrom;
+
+			module.exports = async (channelName, isWindows, functionId) => {
+				let m = await utils();
+				let client = new m.AuthorizeClient(m.buildHttpClient(channelName, isWindows));
+
+				return await firstValueFrom(client.getFunctionFeatures(functionId)
+					.pipe(
+						toArray()
+					));
+			};
+			""";
+
+		// Act
+		var actual = await nodejs.InvokeFromStringAsync<SystemFunctionFeatureViewModel[]>(
+			nodeModule,
+			args: [channelName, isWindows, functionId]);
+
+		// Assert
+		Assert.NotNull(actual);
+		Assert.NotEmpty(actual);
+	}
 }

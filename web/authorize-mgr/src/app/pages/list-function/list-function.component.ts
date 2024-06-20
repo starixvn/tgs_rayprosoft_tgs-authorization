@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CreateFunctionComponent, CreateFunctionDialogInput, CreateFunctionDialogResult } from '../components/create-function/create-function.component';
 import { MatDialog } from '@angular/material/dialog';
 import { RenameFunctionComponent, RenameFunctionDialogInput, RenameFunctionDialogResult } from '../components/rename-function/rename-function.component';
+import { ListFeatureComponent, ListFeatureDialogInput } from '../components/list-feature/list-feature.component';
 
 interface ListFunctionFormData {
     system: string;
@@ -95,6 +96,17 @@ export class ListFunctionComponent {
                 await firstValueFrom(this._client.renameFunction(functionId, result.name));
             }
         });
+    }
+
+    public showEditFeatures(functionId: string) {
+        const dialogRef = this._dialog.open<ListFeatureComponent, ListFeatureDialogInput>(
+            ListFeatureComponent,
+            {
+                data: {
+                    functionId
+                }
+            }
+        );
     }
 
     public async deleteFunction(id: string) {

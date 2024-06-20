@@ -34,10 +34,13 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let element">
           <button mat-icon-button color="assent" (click)="showRenameFunction(element.id, element.name)">
-            <mat-icon aria-hidden="false" aria-label="Edit Role priority" fontIcon="edit"></mat-icon>
+            <mat-icon aria-hidden="false" aria-label="Rename Function" fontIcon="edit"></mat-icon>
+          </button>
+          <button mat-icon-button color="assent" (click)="showEditFeatures(element.id)">
+            <mat-icon aria-hidden="false" aria-label="Edit Features" fontIcon="dataset"></mat-icon>
           </button>
           <button mat-icon-button color="warn" (click)="deleteFunction(element.id)">
-            <mat-icon aria-hidden="false" aria-label="Delete Role" fontIcon="delete"></mat-icon>
+            <mat-icon aria-hidden="false" aria-label="Delete Function" fontIcon="delete"></mat-icon>
           </button>
         </td>
       </ng-container>

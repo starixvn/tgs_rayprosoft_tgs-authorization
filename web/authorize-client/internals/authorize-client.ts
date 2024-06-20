@@ -2,6 +2,7 @@ import type { CreateRole, Role } from "../models/role";
 import { Observable, concatMap, map } from "rxjs";
 import type { HttpClient } from '@angular/common/http';
 import { SystemFunction } from "../models/system-function";
+import type { SystemFeatureListItem } from "../models/system-feature";
 
 export class AuthorizeClient {
     constructor(private _http: HttpClient) {
@@ -116,5 +117,18 @@ export class AuthorizeClient {
             .pipe(
                 map(res => res.body)
             );
+    }
+
+    public getFunctionFeatures(functionId: string): Observable<SystemFeatureListItem> {
+        return this._http
+            .get<SystemFeatureListItem[]>(
+                `/api/function/feature/${functionId}`,
+                {
+                    observe: 'response'
+                }
+            )
+            .pipe(
+                concatMap(res => res.body ?? [])
+            )
     }
 }
