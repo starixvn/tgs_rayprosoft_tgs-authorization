@@ -18,14 +18,14 @@
 <mat-divider></mat-divider>
 <mat-card class="form-result" style="flex:content">
   <mat-card-header style="margin-bottom: 15px;">
-    <button mat-mini-fab >
+    <button mat-mini-fab (click)="showCreateFunction()">
       <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
     </button>
   </mat-card-header>
   <mat-card-content>
     <table mat-table [dataSource]="listView">
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef style="width: 100em;">
+        <th mat-header-cell *matHeaderCellDef>
           <h4>功能名稱</h4>
         </th>
         <td mat-cell *matCellDef="let element">{{element.name}}</td>
@@ -33,7 +33,7 @@
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let element">
-          <button mat-icon-button color="assent" (click)="showRenameFunction()">
+          <button mat-icon-button color="assent" (click)="showRenameFunction(element.id, element.name)">
             <mat-icon aria-hidden="false" aria-label="Edit Role priority" fontIcon="edit"></mat-icon>
           </button>
           <button mat-icon-button color="warn" (click)="deleteFunction(element.id)">

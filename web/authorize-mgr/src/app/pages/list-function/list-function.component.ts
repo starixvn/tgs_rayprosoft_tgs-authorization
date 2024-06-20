@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -8,9 +8,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { AuthorizeClient } from '../../services/authorize-client';
 import { SystemFunction } from 'authorize-client/dist/models/system-function';
-import { toArray } from 'rxjs';
+import { firstValueFrom, toArray } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { CreateFunctionComponent, CreateFunctionDialogInput, CreateFunctionDialogResult } from '../components/create-function/create-function.component';
+import { MatDialog } from '@angular/material/dialog';
+import { RenameFunctionComponent, RenameFunctionDialogInput, RenameFunctionDialogResult } from '../components/rename-function/rename-function.component';
 
 interface ListFunctionFormData {
     system: string;
@@ -37,7 +40,7 @@ export class ListFunctionComponent {
     displayedColumns: string[] = ['name', 'id'];
     queryForm: FormGroup;
     listView: SystemFunction[] = [];
-
+    private readonly _dialog = inject(MatDialog);
 
     constructor(
         fb: FormBuilder,
@@ -59,14 +62,44 @@ export class ListFunctionComponent {
     }
 
     public showCreateFunction() {
+        let queryFormData: ListFunctionFormData = this.queryForm.value;
 
+        const dialogRef = this._dialog.open<CreateFunctionComponent, CreateFunctionDialogInput, CreateFunctionDialogResult>(
+            CreateFunctionComponent,
+            {
+                data: {
+                    system: queryFormData.system
+                }
+            });
+
+        dialogRef.afterClosed().subscribe(async result => {
+            if (result !== undefined) {
+                await firstValueFrom(this._client.createFunction(
+                    result.system,
+                    result.name));
+            }
+        });
     }
 
-    public showRenameFunction() {
+    public showRenameFunction(functionId: string, name: string) {
+        const dialogRef = this._dialog.open<RenameFunctionComponent, RenameFunctionDialogInput, RenameFunctionDialogResult>(
+            RenameFunctionComponent,
+            {
+                data: {
+                    name
+                }
+            });
 
+        dialogRef.afterClosed().subscribe(async result => {
+            if (result !== undefined) {
+                await firstValueFrom(this._client.renameFunction(functionId, result.name));
+            }
+        });
     }
 
-    public deleteFunction(id: string) {
+    public async deleteFunction(id: string) {
+        await firstValueFrom(this._client.deleteFunction(id));
 
+        this.query();
     }
 }

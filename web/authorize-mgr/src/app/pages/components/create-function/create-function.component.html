@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>建立功能</h2>
+<mat-dialog-content>
+  <form [formGroup]="createFunctionForm" class="form-content">
+    <mat-form-field>
+      <mat-label>系統</mat-label>
+      <input matInput formControlName="system" required>
+      <mat-hint align="end"
+        *ngIf="createFunctionForm.controls['system'].touched && createFunctionForm.controls['system'].hasError('required')">
+        <span class="error-hint">系統名稱不能為空</span>
+      </mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>名稱</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-hint align="end"
+        *ngIf="createFunctionForm.controls['name'].touched && createFunctionForm.controls['name'].hasError('required')">
+        <span class="error-hint">功能名稱不能為空</span>
+      </mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="cancel()">取消</button>
+  <button mat-button (click)="apply()" [disabled]="!createFunctionForm.valid">套用</button>
+</mat-dialog-actions>
