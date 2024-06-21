@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CreateFunctionComponent, CreateFunctionDialogInput, CreateFunctionDialogResult } from '../components/create-function/create-function.component';
 import { MatDialog } from '@angular/material/dialog';
 import { RenameFunctionComponent, RenameFunctionDialogInput, RenameFunctionDialogResult } from '../components/rename-function/rename-function.component';
-import { ListFeatureComponent, ListFeatureDialogInput } from '../components/list-feature/list-feature.component';
+import { FeatureDialogComponent, FeatureDialogInput } from '../components/feature-dialog/feature-dialog.component';
 
 interface ListFunctionFormData {
     system: string;
@@ -99,8 +99,8 @@ export class ListFunctionComponent {
     }
 
     public showEditFeatures(functionId: string) {
-        const dialogRef = this._dialog.open<ListFeatureComponent, ListFeatureDialogInput>(
-            ListFeatureComponent,
+        const dialogRef = this._dialog.open<FeatureDialogComponent, FeatureDialogInput>(
+            FeatureDialogComponent,
             {
                 data: {
                     functionId

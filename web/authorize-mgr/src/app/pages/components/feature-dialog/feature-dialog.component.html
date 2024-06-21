@@ -1,0 +1,19 @@
+<ng-template #add>
+
+</ng-template>
+<ng-template #list>
+  <app-list-feature [functionId]="functionId"></app-list-feature>
+</ng-template>
+
+<h2 mat-dialog-title>功能特徵</h2>
+<mat-dialog-actions>
+  <button mat-button (click)="click()">新增</button>
+</mat-dialog-actions>
+<mat-dialog-content>
+  <ng-container *ngIf="viewName == 'list'">
+    <ng-container *ngTemplateOutlet="list"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="viewName == 'add'">
+    <ng-container *ngTemplateOutlet="add"></ng-container>
+  </ng-container>
+</mat-dialog-content>
