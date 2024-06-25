@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, QueryList, TemplateRef, ViewChild, ViewChildren, inject, viewChild } from '@angular/core';
-import { FormTemplateDirective } from '../../directives/form-template.directive';
 import { ListFeatureComponent } from '../list-feature/list-feature.component';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
@@ -17,7 +16,6 @@ export interface FeatureDialogInput {
         CommonModule,
         MatDialogModule,
         MatButtonModule,
-        FormTemplateDirective
     ],
     templateUrl: './feature-dialog.component.html',
     styleUrl: './feature-dialog.component.scss'
@@ -34,7 +32,7 @@ export class FeatureDialogComponent {
         this.functionId = data.functionId;
     }
 
-    click(){
+    click() {
         this.viewName = 'add';
     }
 }

@@ -30,7 +30,7 @@ public partial class TgsContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasPostgresExtension("ltree");
+        modelBuilder.HasPostgresExtension("tgs2", "ltree");
 
         modelBuilder.ApplyConfiguration(new Configurations.AccountRoleConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.FeatureRowConfiguration());

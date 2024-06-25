@@ -22,7 +22,6 @@ public class RoleController : ControllerBase
 			{
 				Id = role.Id,
 				Name = role.Name,
-				Priority = role.Priority
 			});
 	}
 
@@ -46,17 +45,6 @@ public class RoleController : ControllerBase
 		var command = new DeleteRoleCommand(roleId);
 
 		return deleteService.ExecuteAsync(command, HttpContext.RequestAborted);
-	}
-
-	[HttpPatch("{roleId:Guid}", Name = "ChangeRolePriority")]
-	public ValueTask ChangeRolePriorityAsync(
-		[FromServices] ICommandService<ChangeRolePriorityCommand> changeService,
-		Guid roleId,
-		[FromBody] ChangeRolePriorityViewModel viewModel)
-	{
-		var command = new ChangeRolePriorityCommand(roleId, viewModel.Priority);
-
-		return changeService.ExecuteAsync(command, HttpContext.RequestAborted);
 	}
 
 	[HttpPut("account/{accountId:Guid}", Name = "AddAcountInRole")]
@@ -128,7 +116,6 @@ public class RoleController : ControllerBase
 			{
 				Id = role.Id,
 				Name = role.Name,
-				Priority = role.Priority
 			});
 	}
 }

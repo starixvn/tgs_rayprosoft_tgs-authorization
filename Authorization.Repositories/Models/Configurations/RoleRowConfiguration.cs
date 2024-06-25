@@ -23,7 +23,6 @@ namespace Tgs.Authorization.Repositories.Entities.Configurations
             entity.Property(e => e.Name)
                 .HasMaxLength(128)
                 .HasColumnName("name");
-            entity.Property(e => e.Priority).HasColumnName("priority");
             entity.Property(e => e.System)
                 .HasMaxLength(128)
                 .HasColumnName("system");

@@ -21,7 +21,6 @@ public class AccountController : ControllerBase
 			{
 				Id = role.Id,
 				Name = role.Name,
-				Priority = role.Priority
 			});
 	}
 }
