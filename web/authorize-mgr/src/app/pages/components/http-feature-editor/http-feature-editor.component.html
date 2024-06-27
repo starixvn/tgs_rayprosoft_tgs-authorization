@@ -1,0 +1,32 @@
+<form [formGroup]="httpFeatureForm" class="form-content">
+  <mat-form-field>
+    <mat-label>HttpMethods</mat-label>
+    <mat-chip-grid #chipGrip formControlName="methods">
+      @for (m of httpFeatureForm.get('methods')?.value; track $index) {
+      <mat-chip-row (removed)="remove(m)">
+        {{m}}
+        <button type="button" matChipRemove [attr.aria-label]="'remove ' + m">
+          <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="cancel"></mat-icon>
+        </button>
+      </mat-chip-row>
+      }
+    </mat-chip-grid>
+    <input matInput placeholder="新增 Http Method..." [ngModel]="currentMethod()"
+      (ngModelChange)="currentMethod.set($event)" [ngModelOptions]="{standalone: true}" [matChipInputFor]="chipGrip"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)"
+      [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+      @for (m of filteredMethods(); track m) {
+      <mat-option [value]="m">{{m}}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>PathTemplate</mat-label>
+    <input matInput formControlName="pathTemplate" placeholder="路徑樣式..." required>
+    <mat-hint align="end"
+      *ngIf="httpFeatureForm.controls['pathTemplate'].touched && httpFeatureForm.controls['pathTemplate'].hasError('required')">
+      <span class="error-hint">PathTemplate 不能為空</span>
+    </mat-hint>
+  </mat-form-field>
+</form>

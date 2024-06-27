@@ -3,6 +3,8 @@ import { ListFeatureComponent } from '../list-feature/list-feature.component';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { CreateFeatureComponent } from '../create-feature/create-feature.component';
+import { MatIconModule } from '@angular/material/icon';
 
 export interface FeatureDialogInput {
     functionId: string;
@@ -16,6 +18,8 @@ export interface FeatureDialogInput {
         CommonModule,
         MatDialogModule,
         MatButtonModule,
+        MatIconModule,
+        CreateFeatureComponent
     ],
     templateUrl: './feature-dialog.component.html',
     styleUrl: './feature-dialog.component.scss'
@@ -32,7 +36,11 @@ export class FeatureDialogComponent {
         this.functionId = data.functionId;
     }
 
-    click() {
+    showCreateFeatureView() {
         this.viewName = 'add';
+    }
+
+    close() {
+        this.dialogRef.close();
     }
 }

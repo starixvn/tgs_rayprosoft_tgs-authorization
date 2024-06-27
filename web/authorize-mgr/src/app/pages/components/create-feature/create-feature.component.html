@@ -1,0 +1,21 @@
+<form [formGroup]="createFeatureForm" class="form-content">
+  <mat-form-field>
+    <mat-label>名稱</mat-label>
+    <input matInput formControlName="name" required>
+    <mat-hint align="end"
+      *ngIf="createFeatureForm.controls['name'].touched && createFeatureForm.controls['name'].hasError('required')">
+      <span class="error-hint">名稱不能為空</span>
+    </mat-hint>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>類型</mat-label>
+    <mat-select formControlName="type">
+      <mat-option value="http">Http</mat-option>
+    </mat-select>
+    <mat-hint align="end"
+      *ngIf="createFeatureForm.controls['type'].touched && createFeatureForm.controls['type'].hasError('required')">
+      <span class="error-hint">必須要指定類型</span>
+    </mat-hint>
+  </mat-form-field>
+  <app-http-feature-editor></app-http-feature-editor>
+</form>

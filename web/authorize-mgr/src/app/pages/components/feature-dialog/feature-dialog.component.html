@@ -1,14 +1,14 @@
 <ng-template #add>
-
+  <app-create-feature></app-create-feature>
 </ng-template>
 <ng-template #list>
+  <button mat-mini-fab (click)="showCreateFeatureView()">
+    <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
+  </button>
   <app-list-feature [functionId]="functionId"></app-list-feature>
 </ng-template>
 
 <h2 mat-dialog-title>功能特徵</h2>
-<mat-dialog-actions>
-  <button mat-button (click)="click()">新增</button>
-</mat-dialog-actions>
 <mat-dialog-content>
   <ng-container *ngIf="viewName == 'list'">
     <ng-container *ngTemplateOutlet="list"></ng-container>
@@ -17,3 +17,6 @@
     <ng-container *ngTemplateOutlet="add"></ng-container>
   </ng-container>
 </mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="close()">關閉</button>
+</mat-dialog-actions>
